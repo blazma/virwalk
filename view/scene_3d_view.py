@@ -51,7 +51,16 @@ class Scene3DView(View):
         delta_y = (new_mouse_y - self.mouse_y)/2
         angle_x = self.horizontal_fov*math.asin(delta_x)
         angle_y = self.vertical_fov*math.asin(delta_y)
-        self.camera.setHpr(h+angle_x, p-angle_y, 0)
+        min_p = self.vertical_fov/2-math.degrees(math.atan(1/2))
+        max_p = -min_p
+
+        # calculate total angle change, prevent going out of bounds
+        total_angle_x = h+angle_x
+        total_angle_y = p
+        if min_p <= p-angle_y <= max_p:
+            total_angle_y = p-angle_y
+
+        self.camera.setHpr(total_angle_x, total_angle_y, 0)
 
     def fov(self, x):
         """
@@ -77,9 +86,11 @@ class Scene3DView(View):
         self.task_manager.remove(self.task)
 
     def increase_fov(self):
+        _, p, r = self.camera.getHpr()
         self.delta_fov = self.fov(self.zoom_level)
         new_vertical_fov = self.vertical_fov + self.delta_fov
-        if new_vertical_fov <= self.max_fov:
+        print("p: {}, theta: {}, arctan: {}".format(p, new_vertical_fov, math.degrees(math.atan(1 / 2))))
+        if new_vertical_fov <= self.max_fov and new_vertical_fov < math.degrees(math.atan(1/2)):
             self.core.camLens.setFov(hfov=self.fov_coefficient * new_vertical_fov, vfov=new_vertical_fov)
             self.zoom_level += 0.01
 
