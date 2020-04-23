@@ -2,7 +2,7 @@ from model.location import Location
 from view.main_menu_view import MainMenuView
 from view.scene_3d_view import Scene3DView
 from view.pause_menu_view import PauseMenuView
-from direct.showbase.ShowBase import ShowBase
+import csv
 
 
 class Core(ShowBase):
@@ -18,10 +18,12 @@ class Core(ShowBase):
 
     def load_locations(self, locations_file):
         with open(locations_file, "r") as l_file:
-            # process lines
-            dummy_location = Location(id=0, neighbors=[3, 6, 7], texture="resource/photo00.jpg")
-            self.locations.append(dummy_location)
-            pass
+            data = csv.DictReader(l_file, delimiter="|")
+            for row in data:
+                split_coord = [int(i) for i in row["map_coord"].split(',')]
+                split_neighbors = row["neighbors"].split(',')
+                current_location = Location(id=row["id"], neighbors=split_neighbors, texture=row["texture"])
+                self.locations.append(current_location)
 
     def get_view(self):
         return self.active_view
