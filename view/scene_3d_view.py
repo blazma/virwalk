@@ -6,19 +6,30 @@ import math
 class Scene3DView(View):
     def __init__(self, core):
         super().__init__(core)
-        self.inc = 0
         self.task = None
         self.mouse_x, self.mouse_y = None, None
-        self.task_manager = Task.TaskManager()
+        self.horizontal_fov = self.core.camLens.getHfov()
+        self.vertical_fov = self.core.camLens.getVfov()
 
+        # variables for zooming
+        self.zoom_level = 0
+        self.delta_fov = self.fov(self.zoom_level)
+        self.min_fov = 10
+        self.max_fov = self.fov(1/2)
+        self.fov_coefficient = self.horizontal_fov/self.vertical_fov
+
+        self.task_manager = Task.TaskManager()
         self.camera = self.core.camera
         self.location = self.core.origin
-        self.model_path = "resource\cylinder.egg"
+        self.model_path = "resource\\cylinder.egg"
+        self.set_up_controls()
+
+    def set_up_controls(self):
         self.core.disable_mouse()
         self.core.accept('mouse1', self.rotate_camera)
         self.core.accept('mouse1-up', self.rotate_camera_up)
-        self.core.accept('wheel-up', self.increase_fov)
-        self.core.accept('wheel-down', self.decrease_fov)
+        self.core.accept('wheel_up', self.increase_fov)
+        self.core.accept('wheel_down', self.decrease_fov)
 
     def load_view(self):
         return self.core.loader.loadModel(self.model_path)
@@ -28,16 +39,29 @@ class Scene3DView(View):
         self.mouse_y = self.core.mouseWatcherNode.getMouseY()
 
     def set_camera_end_position(self):
+        # field of view
+        self.horizontal_fov = self.core.camLens.getHfov()
+        self.vertical_fov = self.core.camLens.getVfov()
+
+        # horizontal and vertical pan
         new_mouse_x = self.core.mouseWatcherNode.getMouseX()
         new_mouse_y = self.core.mouseWatcherNode.getMouseY()
-        h, p, r = self.camera.getHpr()
+        h, p, r = self.camera.getHpr()  # Euler angles
         delta_x = (new_mouse_x - self.mouse_x)/2
         delta_y = (new_mouse_y - self.mouse_y)/2
-        field_of_view = self.core.camLens.getHfov()
-        angle = field_of_view*math.asin(delta_x)
-        #self.camera.setHpr(h+angle, 0, 0)
-        self.core.camLens.setFov(field_of_view+180*math.asin(delta_y)/math.pi)
-        print(self.core.camLens.getHfov())
+        angle_x = self.horizontal_fov*math.asin(delta_x)
+        angle_y = self.vertical_fov*math.asin(delta_y)
+        self.camera.setHpr(h+angle_x, p-angle_y, 0)
+
+    def fov(self, x):
+        """
+        Helper function that calculates the field of view required to fill
+        the view with the entirety of an object with size x.
+
+        :param x: size of object (normalized between 0 and 1)
+        :return: FOV angle in degrees
+        """
+        return math.degrees(2*math.atan(x))
 
     def update_camera(self, task):
         self.set_camera_end_position()
@@ -53,11 +77,15 @@ class Scene3DView(View):
         self.task_manager.remove(self.task)
 
     def increase_fov(self):
-        field_of_view = self.core.camLens.getHfov()
-        print("fel")
-        self.camera.node().getLens().setHFov(120)
+        self.delta_fov = self.fov(self.zoom_level)
+        new_vertical_fov = self.vertical_fov + self.delta_fov
+        if new_vertical_fov <= self.max_fov:
+            self.core.camLens.setFov(hfov=self.fov_coefficient * new_vertical_fov, vfov=new_vertical_fov)
+            self.zoom_level += 0.01
 
     def decrease_fov(self):
-        field_of_view = self.core.camLens.getFov()
-        print("le")
-        self.camera.node().getLens().setHFov(60)
+        self.delta_fov = self.fov(self.zoom_level)
+        new_vertical_fov = self.vertical_fov + self.delta_fov
+        if self.min_fov <= new_vertical_fov:
+            self.core.camLens.setFov(hfov=self.fov_coefficient * new_vertical_fov, vfov=new_vertical_fov)
+            self.zoom_level -= 0.01

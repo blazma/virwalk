@@ -7,8 +7,8 @@ from panda3d.core import WindowProperties
 
 
 class Core(ShowBase):
-    WINDOW_WIDTH = 512
-    WINDOW_HEIGHT = 1024
+    WINDOW_WIDTH = 1024
+    WINDOW_HEIGHT = 768
 
     def __init__(self):
         super().__init__()
@@ -29,7 +29,6 @@ class Core(ShowBase):
 
         # set window size, load first view
         self.set_window_size()
-        print(self.camLens.getVfov())
         self.load_scene(self.scene_3d_view)
 
     def set_window_size(self):
