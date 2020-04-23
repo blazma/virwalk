@@ -1,4 +1,5 @@
 from model.core import Core
+from view.main_menu_view import MainMenuView
 
 
 class Virwalk:
@@ -6,7 +7,8 @@ class Virwalk:
         self.core = Core()
 
     def run(self):
-        self.core.run_program()
+        self.core.set_view(MainMenuView)
+        self.core.run()
 
 
 if __name__ == '__main__':
