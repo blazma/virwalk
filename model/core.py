@@ -18,10 +18,13 @@ class Core:
 
     def load_locations(self, locations_file):
         with open(locations_file, "r") as l_file:
-            # process lines
-            dummy_location = Location(id=0, neighbors=[3, 6, 7], texture="resource/photo00.jpg")
-            self.locations.append(dummy_location)
-            pass
+            data = csv.DictReader(l_file, delimiter="|")
+            for row in data:
+                split_c = [int(i) for i in row["map_coord"].split(',')]
+                split_n = row["neighbors"].split(',')
+                print(row["id"], row["texture"], split_c, split_n)
+                current_location = Location(id=row["id"], neighbors=split_n, texture=row["texture"])
+                self.locations.append(current_location)
 
     def run_program(self):
         # Panda3D stuff probably
