@@ -6,8 +6,12 @@ import math
 class Scene3DView(View):
     def __init__(self, core):
         super().__init__(core)
+        self.scene = None
+        self.loader = self.core.loader
+        self.render = self.core.render
+
         self.task = None
-        self.mouse_x, self.mouse_y = None, None
+        self.mouse_x, self.mouse_y = 0, 0
         self.horizontal_fov = self.core.camLens.getHfov()
         self.vertical_fov = self.core.camLens.getVfov()
 
@@ -32,7 +36,16 @@ class Scene3DView(View):
         self.core.accept('wheel_down', self.decrease_fov)
 
     def load_view(self):
-        return self.core.loader.loadModel(self.model_path)
+        self.core.get_active_view().close_view()
+        self.scene = self.loader.loadModel(self.model_path)
+        texture = self.loader.loadTexture("resource\photo01.jpg")
+        self.scene.setTexture(texture)
+        self.scene.reparentTo(self.render)
+        self.scene.setScale(2.0, 2.0, 2.0)
+        self.scene.setPos(self.camera.getPos())
+
+    def close_view(self):
+        pass
 
     def set_camera_starting_position(self):
         self.mouse_x = self.core.mouseWatcherNode.getMouseX()
@@ -74,7 +87,8 @@ class Scene3DView(View):
 
     def rotate_camera_up(self):
         self.set_camera_end_position()
-        self.task_manager.remove(self.task)
+        if self.task is not None:
+            self.task_manager.remove(self.task)
 
     def increase_fov(self):
         self.delta_fov = self.fov(self.zoom_level)
