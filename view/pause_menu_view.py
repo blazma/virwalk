@@ -3,8 +3,7 @@ from direct.gui.DirectGui import *
 
 class PauseMenuView(View):
     def __init__(self, core):
-        super().__init__()
-        self.core = core
+        super().__init__(core)
         self.screen = DirectDialog(frameSize=(-0.9, 0.9, -0.9, 0.9), fadeScreen=0.4, relief=DGG.FLAT)
         pause_view_label = DirectLabel(
             text="Do you want to continue this tour?\nIf yes, press continue,\nif you want to exit, then press quit!",
