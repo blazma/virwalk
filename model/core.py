@@ -23,7 +23,6 @@ class Core(ShowBase, DirectObject):
 
         # Set the starter view to Main menu
         self.set_active_view(self.main_menu_view)
-
     def load_locations(self, locations_file):
         with open(locations_file, "r") as l_file:
             # process lines
@@ -40,5 +39,10 @@ class Core(ShowBase, DirectObject):
     def show_active_view(self):
         self.active_view.screen.show()
 
-    def comm(self):
-        print("Itt vagyok")
+    def change_for_scene_3d_view(self):
+        print("Continue button is pressed.")
+        self.active_view.screen.hide()
+        self.set_active_view(self.scene_3d_view)
+
+    def debug(self):
+        print("The Go to the map button is pressed")
