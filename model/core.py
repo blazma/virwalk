@@ -15,6 +15,7 @@ class Core(ShowBase, DirectObject):
     def __init__(self):
         super().__init__()
         self.locations = []
+        self.active_view = None
         self.active_location = None
 
         # load data
