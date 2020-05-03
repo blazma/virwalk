@@ -15,3 +15,4 @@ class Minimap:
         line_node = linesegs.create()
         self.image.attachNewNode(line_node)
         #self.line_node.create()
+
