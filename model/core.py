@@ -3,24 +3,25 @@ from view.main_menu_view import MainMenuView
 from view.scene_3d_view import Scene3DView
 from view.pause_menu_view import PauseMenuView
 from direct.showbase.ShowBase import ShowBase
+from direct.showbase.DirectObject import DirectObject
 from panda3d.core import WindowProperties
+from pathlib import Path
 import csv
 
 
-class Core(ShowBase):
-    WINDOW_WIDTH = 1024
-    WINDOW_HEIGHT = 768
+class Core(ShowBase, DirectObject):
+    WINDOW_WIDTH = 800
+    WINDOW_HEIGHT = 600
 
     def __init__(self):
         super().__init__()
-        # declare variables
-        self.scene = None
         self.locations = []
         self.active_view = None
         self.active_location = None
 
         # load data
-        self.load_locations("resource/location_file.txt")
+        locations_file_path = Path("resource/location_file.txt")
+        self.load_locations(locations_file_path)
         self.origin = self.locations[0]
 
         # define views
@@ -30,7 +31,7 @@ class Core(ShowBase):
 
         # set window size, load first view
         self.set_window_size()
-        self.load_scene(self.scene_3d_view)
+        self.set_active_view(self.main_menu_view)
 
     def set_window_size(self):
         props = WindowProperties()
@@ -46,16 +47,9 @@ class Core(ShowBase):
                 current_location = Location(id=row["id"], neighbors=split_neighbors, texture=row["texture"], map_coord=split_coord)
                 self.locations.append(current_location)
 
-    def load_scene(self, view):
-        self.scene = view.load_view()
-        texture = self.loader.loadTexture("resource\photo01.jpg")
-        self.scene.setTexture(texture)
-        self.scene.reparentTo(self.render)
-        self.scene.setScale(2.0, 2.0, 2.0)
-        self.scene.setPos(self.camera.getPos())
-
-    def get_view(self):
+    def get_active_view(self):
         return self.active_view
 
-    def set_view(self, view):
+    def set_active_view(self, view):
+        view.load_view()
         self.active_view = view

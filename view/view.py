@@ -9,3 +9,7 @@ class View(ABC):
     @abstractmethod
     def load_view(self):
         raise NotImplementedError
+
+    @abstractmethod
+    def close_view(self):
+        raise NotImplementedError

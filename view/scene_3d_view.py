@@ -1,32 +1,33 @@
 from view.view import View
 from direct.task import Task
+from pathlib import Path
 import math
 
 
 class Scene3DView(View):
     def __init__(self, core):
         super().__init__(core)
-        self.camera = self.core.camera
-        self.location = self.core.origin
-        self.model_path = "resource\\cylinder.egg"
-        self.task_manager = Task.TaskManager()
+        self.scene = None
+        self.loader = self.core.loader
+        self.render = self.core.render
+
         self.task = None
-        self.mouse_x, self.mouse_y = None, None
+        self.mouse_x, self.mouse_y = 0, 0
+        self.horizontal_fov = self.core.camLens.getHfov()
+        self.vertical_fov = self.core.camLens.getVfov()
 
         # variables for zooming
         self.zoom_level = 0
-        self.horizontal_fov = self.core.camLens.getHfov()
-        self.vertical_fov = self.core.camLens.getVfov()
         self.delta_fov = self.fov(self.zoom_level)
         self.min_fov = 10
         self.max_fov = self.fov(1/2)
         self.fov_coefficient = self.horizontal_fov/self.vertical_fov
 
-        # we overwrite default controls with custom ones
+        self.task_manager = Task.TaskManager()
+        self.camera = self.core.camera
+        self.location = self.core.origin
+        self.model_path = Path("resource\\cylinder.egg")
         self.set_up_controls()
-
-    def load_view(self):
-        return self.core.loader.loadModel(self.model_path)
 
     def set_up_controls(self):
         self.core.disable_mouse()
@@ -34,6 +35,19 @@ class Scene3DView(View):
         self.core.accept('mouse1-up', self.on_mouse_release)
         self.core.accept('wheel_up', self.on_wheel_up)
         self.core.accept('wheel_down', self.on_wheel_down)
+
+    def load_view(self):
+        self.core.get_active_view().close_view()
+        self.scene = self.loader.loadModel(self.model_path)
+        texture_path = Path("resource/photo01.jpg")
+        texture = self.loader.loadTexture(texture_path)
+        self.scene.setTexture(texture)
+        self.scene.reparentTo(self.render)
+        self.scene.setScale(2.0, 2.0, 2.0)
+        self.scene.setPos(self.camera.getPos())
+
+    def close_view(self):
+        pass
 
     def update_mouse_position(self):
         self.mouse_x = self.core.mouseWatcherNode.getMouseX()
@@ -63,6 +77,17 @@ class Scene3DView(View):
 
         self.camera.setHpr(total_angle_x, total_angle_y, 0)
 
+    @staticmethod
+    def fov(x):
+        """
+        Helper function that calculates the field of view required to fill
+        the view with the entirety of an object with size x.
+
+        :param x: size of object (normalized between 0 and 1)
+        :return: FOV angle in degrees
+        """
+        return math.degrees(2*math.atan(x))
+
     def on_mouse_press(self):
 
         def on_mouse_task(task):
@@ -75,7 +100,8 @@ class Scene3DView(View):
 
     def on_mouse_release(self):
         self.update_camera_position()
-        self.task_manager.remove(self.task)
+        if self.task is not None:
+            self.task_manager.remove(self.task)
 
     def on_wheel_up(self):
         # ZOOM OUT
@@ -95,14 +121,3 @@ class Scene3DView(View):
         if self.min_fov <= new_vertical_fov:
             self.core.camLens.setFov(hfov=self.fov_coefficient * new_vertical_fov, vfov=new_vertical_fov)
             self.zoom_level -= 0.01
-
-    @staticmethod
-    def fov(x):
-        """
-        Helper function that calculates the field of view required to fill
-        the view with the entirety of an object with size x.
-
-        :param x: size of object (normalized between 0 and 1)
-        :return: FOV angle in degrees
-        """
-        return math.degrees(2*math.atan(x))
