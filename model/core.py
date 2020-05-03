@@ -9,7 +9,6 @@ from pathlib import Path
 import csv
 
 
-
 class Core(ShowBase, DirectObject):
     WINDOW_WIDTH = 800
     WINDOW_HEIGHT = 600
