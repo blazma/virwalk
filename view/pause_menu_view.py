@@ -11,10 +11,9 @@ class PauseMenuView(View):
             parent=self.screen, scale=0.1, pos=(0, 0, 0.4))
         continue_button = DirectButton(text="Continue", command=self.on_start_button, pos=(0, 0, -0.2), parent=self.screen, scale=0.1)
         quit_button = DirectButton(text="Quit", command=self.on_quit_button, pos=(0, 0, -0.4), parent=self.screen, scale=0.1)
-        self.screen.hide()
+        self.close_view()
 
     def on_start_button(self):
-        print("Continue button is pressed.")
         self.close_view()
         self.core.set_active_view(self.core.scene_3d_view)
 

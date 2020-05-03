@@ -34,6 +34,7 @@ class Scene3DView(View):
         self.core.accept('mouse1-up', self.rotate_camera_up)
         self.core.accept('wheel_up', self.increase_fov)
         self.core.accept('wheel_down', self.decrease_fov)
+        self.core.accept('escape', self.on_esc_button)
 
     def load_view(self):
         self.core.get_active_view().close_view()
@@ -103,3 +104,6 @@ class Scene3DView(View):
         if self.min_fov <= new_vertical_fov:
             self.core.camLens.setFov(hfov=self.fov_coefficient * new_vertical_fov, vfov=new_vertical_fov)
             self.zoom_level -= 0.01
+
+    def on_esc_button(self):
+        self.core.set_active_view(self.core.pause_menu_view)

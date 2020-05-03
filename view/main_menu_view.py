@@ -10,19 +10,13 @@ class MainMenuView(View):
         main_view_label = DirectLabel(text="Welcome to VirWalk!\n\nChoose from the following options:", scale=0.1, pos=(0, 0, 0.4), parent=self.screen)
         start_button = DirectButton(text="Start expoloring", command=self.on_start_button, pos=(0, 0, -0.2), parent=self.screen, scale=0.1)
         #start_button.setTransparency(True)
-        map_button = DirectButton(text="Go to the map", command=self.on_debug, pos=(0, 0, -0.4), parent=self.screen, scale=0.1)
-        #map_button.setTransparency(True)
         quit_button = DirectButton(text="Quit", command=quit, pos=(0, 0, -0.6), parent=self.screen, scale=0.1)
         #quit_button.setTransparency(True)
-        self.screen.hide()
+        self.close_view()
 
     def on_start_button(self):
-        print("Continue button is pressed.")
         self.close_view()
         self.core.set_active_view(self.core.scene_3d_view)
-
-    def on_debug(self):
-        print("The Go to the map button is pressed")
 
     def load_view(self):
         self.screen.show()
