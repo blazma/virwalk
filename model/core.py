@@ -9,8 +9,8 @@ import csv
 
 
 class Core(ShowBase, DirectObject):
-    WINDOW_WIDTH = 1024
-    WINDOW_HEIGHT = 768
+    WINDOW_WIDTH = 800
+    WINDOW_HEIGHT = 600
 
     def __init__(self):
         super().__init__()
