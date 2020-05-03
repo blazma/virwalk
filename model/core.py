@@ -15,6 +15,7 @@ class Core(ShowBase, DirectObject):
 
     def __init__(self):
         super().__init__()
+
         self.locations = []
         self.active_view = None
         self.active_location = None
@@ -22,7 +23,7 @@ class Core(ShowBase, DirectObject):
         # load data
         locations_file_path = Path("resource/location_file.txt")
         self.load_locations(locations_file_path)
-        self.origin = self.locations[0]
+        self.active_location = self.locations[0]
 
         # define views
         self.main_menu_view = MainMenuView(self)
@@ -39,16 +40,36 @@ class Core(ShowBase, DirectObject):
         self.win.requestProperties(props)
 
     def load_locations(self, locations_file):
+
+        def process_coords(row):
+            split_coords = row["map_coord"].split(',')
+            map_x, map_y = [int(i) for i in split_coords]
+            map_x_normed = ((map_x*2) / self.WINDOW_WIDTH) - 1
+            map_y_normed = -(((map_y*2) / self.WINDOW_HEIGHT) - 1)
+            return map_x_normed, map_y_normed
+
         with open(locations_file, "r") as l_file:
             data = csv.DictReader(l_file, delimiter="|")
             for row in data:
-                split_coord = [int(i) for i in row["map_coord"].split(',')]
-                split_neighbors = row["neighbors"].split(',')
-                current_location = Location(id=row["id"], neighbors=split_neighbors, texture=row["texture"], map_coord=split_coord)
-                self.locations.append(current_location)
+                id = row["id"]
+                x, y = process_coords(row)
+                neighbors = row["neighbors"].split(',')
+                texture = row["texture"]
+                location = Location(id, x, y, neighbors, texture)
+                self.locations.append(location)
+                location.reparentTo(self.render2d)
+
+    def find_location_by_id(self, id):
+        for location in self.locations:
+            if location.id == id:
+                return location
+        return None
 
     def get_active_view(self):
         return self.active_view
+
+    def get_active_texture(self):
+        return self.active_location.get_texture()
 
     def set_active_view(self, view):
         view.load_view()

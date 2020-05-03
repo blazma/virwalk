@@ -1,6 +1,7 @@
 from view.view import View
 from direct.task import Task
 from pathlib import Path
+from view.minimap import Minimap
 import math
 
 
@@ -25,10 +26,12 @@ class Scene3DView(View):
 
         self.task_manager = Task.TaskManager()
         self.camera = self.core.camera
-        self.location = self.core.origin
+        self.location = self.core.active_location
         self.model_path = Path("resource/cylinder.egg")
+        self.minimap = Minimap(self.core)
         self.is_pause_on = False
         self.set_up_controls()
+
 
     def set_up_controls(self):
         if not self.is_pause_on:
@@ -42,12 +45,15 @@ class Scene3DView(View):
     def load_view(self):
         self.core.get_active_view().close_view()
         self.scene = self.loader.loadModel(self.model_path)
-        texture_path = Path("resource/photo01.jpg")
+        active_texture = self.core.get_active_texture()
+        texture_path = Path("resource/{}".format(active_texture))
         texture = self.loader.loadTexture(texture_path)
         self.scene.setTexture(texture)
         self.scene.reparentTo(self.render)
         self.scene.setScale(2.0, 2.0, 2.0)
         self.scene.setPos(self.camera.getPos())
+        self.minimap.show()
+        self.core.active_location.set_to_active()
 
     def close_view(self):
         pass
