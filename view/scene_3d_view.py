@@ -1,6 +1,7 @@
 from view.view import View
 from direct.task import Task
 from pathlib import Path
+from view.minimap import Minimap
 import math
 
 
@@ -29,6 +30,7 @@ class Scene3DView(View):
         self.model_path = Path("resource/cylinder.egg")
         self.set_up_controls()
 
+
     def set_up_controls(self):
         self.core.disable_mouse()
         self.core.accept('mouse1', self.on_mouse_press)
@@ -45,6 +47,7 @@ class Scene3DView(View):
         self.scene.reparentTo(self.render)
         self.scene.setScale(2.0, 2.0, 2.0)
         self.scene.setPos(self.camera.getPos())
+        Minimap(self.core)
 
     def close_view(self):
         pass
