@@ -26,7 +26,7 @@ class Scene3DView(View):
         self.task_manager = Task.TaskManager()
         self.camera = self.core.camera
         self.location = self.core.origin
-        self.model_path = Path("resource\\cylinder.egg")
+        self.model_path = Path("resource/cylinder.egg")
         self.set_up_controls()
 
     def set_up_controls(self):
