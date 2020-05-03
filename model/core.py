@@ -8,9 +8,10 @@ from panda3d.core import WindowProperties
 from pathlib import Path
 import csv
 
+
 class Core(ShowBase, DirectObject):
-    WINDOW_WIDTH = 800
-    WINDOW_HEIGHT = 600
+    WINDOW_WIDTH = 1920
+    WINDOW_HEIGHT = 1080
 
     def __init__(self):
         super().__init__()
