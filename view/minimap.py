@@ -1,28 +1,39 @@
-from pathlib import Path
-from direct.gui.DirectGui import DirectFrame
 from direct.gui.OnscreenImage import OnscreenImage
+from direct.gui.DirectFrame import DirectFrame
 from panda3d.core import LineSegs
+
 
 class Minimap:
     def __init__(self, core):
         self.core = core
-        aspect_ratio = self.core.WINDOW_WIDTH/self.core.WINDOW_HEIGHT
-        self.screen = DirectFrame(frameColor=(1, 1, 1, 0))
-        self.image_path = Path("resource/minimap.png")
-        self.image = OnscreenImage(image="resource/minimap.png", pos=(0.7, 0.0, -0.7), scale=0.2, parent=self.core.render2d)
+        self.locations = self.core.locations
+        self.screen = DirectFrame(frameColor=(0, 0, 0, 1), parent=self.core.render2d)
+        self.map = OnscreenImage(image="resource/minimap.png", pos=(0.7, 0.0, -0.7), scale=0.25, parent=self.screen)
+        self.draw_points()
+        self.draw_lines()
+        self.screen.hide()
 
+    def draw_points(self):
+        for location in self.locations:
+            location.reparentTo(self.map)
+
+    def draw_lines(self):
         linesegs = LineSegs()
-        linesegs.set_color(1.0, 0.0, 0.0, 0.0)
-        linesegs.move_to(0.0, 0.0, 0.0)
-        linesegs.draw_to(0.5, 0.0, 0.5)
+        linesegs.setColor(0.0, 0.0, 0.0, 0.0)
+        linesegs.setThickness(2.25)
+        for location in self.locations:
+            loc_x, loc_y = location.get_position()
+            linesegs.moveTo(loc_x, 0.0, loc_y)
+            for neighbor_id in location.get_neighbors():
+                neighbor = self.core.find_location_by_id(neighbor_id)
+                nb_x, nb_y = neighbor.get_position()
+                linesegs.drawTo(nb_x, 0.0, nb_y)
+                linesegs.moveTo(loc_x, 0.0, loc_y)
         line_node = linesegs.create()
-        self.image.attachNewNode(line_node)
+        self.map.attachNewNode(line_node)
 
-        x = self.core.locations[0].map_coord[0]
-        y = self.core.locations[0].map_coord[1]
+    def show(self):
+        self.screen.show()
 
-        point = self.core.loader.loadModel("resource/point.egg")
-        point.setColor(1.0, 0.0, 0.0, 0.0)
-        point.reparentTo(self.image)
-        point.setScale(0.05, 0.05, 0.05)
-        point.setPos(0.0, 0.0, 0.0)
+    def hide(self):
+        self.screen.hide()
