@@ -5,7 +5,9 @@ from view.pause_menu_view import PauseMenuView
 from direct.showbase.ShowBase import ShowBase
 from direct.showbase.DirectObject import DirectObject
 from panda3d.core import WindowProperties
+from pathlib import Path
 import csv
+
 
 
 class Core(ShowBase, DirectObject):
@@ -19,7 +21,8 @@ class Core(ShowBase, DirectObject):
         self.active_location = None
 
         # load data
-        self.load_locations("resource/location_file.txt")
+        locations_file_path = Path("resource/location_file.txt")
+        self.load_locations(locations_file_path)
         self.origin = self.locations[0]
 
         # define views
