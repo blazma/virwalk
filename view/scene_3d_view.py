@@ -30,6 +30,7 @@ class Scene3DView(View):
         self.model_path = Path("resource/cylinder.egg")
         self.set_up_controls()
 
+
     def set_up_controls(self):
         self.core.disable_mouse()
         self.core.accept('mouse1', self.on_mouse_press)

@@ -3,7 +3,6 @@ from direct.gui.DirectGui import DirectFrame
 from direct.gui.OnscreenImage import OnscreenImage
 from panda3d.core import LineSegs
 
-
 class Minimap:
     def __init__(self, core):
         self.core = core
@@ -18,6 +17,9 @@ class Minimap:
         linesegs.draw_to(0.5, 0.0, 0.5)
         line_node = linesegs.create()
         self.image.attachNewNode(line_node)
+
+        x = self.core.locations[0].map_coord[0]
+        y = self.core.locations[0].map_coord[1]
 
         point = self.core.loader.loadModel("resource/point.egg")
         point.setColor(1.0, 0.0, 0.0, 0.0)

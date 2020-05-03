@@ -44,8 +44,9 @@ class Core(ShowBase, DirectObject):
             data = csv.DictReader(l_file, delimiter="|")
             for row in data:
                 split_coord = [int(i) for i in row["map_coord"].split(',')]
+                normed_coords = [((split_coord[0]*2) / 800) - 1, (((split_coord[1]*2) / 600) - 1) * (-1)]
                 split_neighbors = row["neighbors"].split(',')
-                current_location = Location(id=row["id"], neighbors=split_neighbors, texture=row["texture"], map_coord=split_coord)
+                current_location = Location(id=row["id"], neighbors=split_neighbors, texture=row["texture"], map_coord=normed_coords)
                 self.locations.append(current_location)
 
     def get_active_view(self):
