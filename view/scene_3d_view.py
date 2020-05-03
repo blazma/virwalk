@@ -59,8 +59,18 @@ class Scene3DView(View):
         self.vertical_fov = self.core.camLens.getVfov()
 
         # horizontal and vertical pan
-        new_mouse_x = self.core.mouseWatcherNode.getMouseX()
-        new_mouse_y = self.core.mouseWatcherNode.getMouseY()
+        try:
+            new_mouse_x = self.core.mouseWatcherNode.getMouseX()
+        except:
+            print("hiba_x")
+            new_mouse_x = 0
+
+        try:
+            new_mouse_y = self.core.mouseWatcherNode.getMouseY()
+        except:
+            print("hiba_y")
+            new_mouse_y = 0
+
         h, p, r = self.camera.getHpr()  # Euler angles
         delta_x = (new_mouse_x - self.mouse_x)/2
         delta_y = (new_mouse_y - self.mouse_y)/2
