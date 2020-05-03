@@ -61,15 +61,10 @@ class Scene3DView(View):
         # horizontal and vertical pan
         try:
             new_mouse_x = self.core.mouseWatcherNode.getMouseX()
-        except:
-            print("hiba_x")
-            new_mouse_x = 0
-
-        try:
             new_mouse_y = self.core.mouseWatcherNode.getMouseY()
-        except:
-            print("hiba_y")
-            new_mouse_y = 0
+        except AssertionError:
+            new_mouse_x = self.mouse_x
+            new_mouse_y = self.mouse_y
 
         h, p, r = self.camera.getHpr()  # Euler angles
         delta_x = (new_mouse_x - self.mouse_x)/2
