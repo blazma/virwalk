@@ -1,5 +1,6 @@
 from view.view import View
 from direct.task import Task
+from pathlib import Path
 import math
 
 
@@ -25,7 +26,7 @@ class Scene3DView(View):
         self.task_manager = Task.TaskManager()
         self.camera = self.core.camera
         self.location = self.core.origin
-        self.model_path = "resource\\cylinder.egg"
+        self.model_path = Path("resource/cylinder.egg")
         self.set_up_controls()
 
     def set_up_controls(self):
@@ -38,7 +39,8 @@ class Scene3DView(View):
     def load_view(self):
         self.core.get_active_view().close_view()
         self.scene = self.loader.loadModel(self.model_path)
-        texture = self.loader.loadTexture("resource\photo01.jpg")
+        texture_path = Path("resource/photo01.jpg")
+        texture = self.loader.loadTexture(texture_path)
         self.scene.setTexture(texture)
         self.scene.reparentTo(self.render)
         self.scene.setScale(2.0, 2.0, 2.0)
