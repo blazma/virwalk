@@ -26,15 +26,18 @@ class Scene3DView(View):
         self.task_manager = Task.TaskManager()
         self.camera = self.core.camera
         self.location = self.core.origin
-        self.model_path = Path("resource/cylinder.egg")
+        self.model_path = "resource\\cylinder.egg"
+        self.is_pause_on = False
         self.set_up_controls()
 
     def set_up_controls(self):
-        self.core.disable_mouse()
-        self.core.accept('mouse1', self.on_mouse_press)
-        self.core.accept('mouse1-up', self.on_mouse_release)
-        self.core.accept('wheel_up', self.on_wheel_up)
-        self.core.accept('wheel_down', self.on_wheel_down)
+        if self.is_pause_on == False:
+            self.core.disable_mouse()
+            self.core.accept('mouse1', self.rotate_camera)
+            self.core.accept('mouse1-up', self.rotate_camera_up)
+            self.core.accept('wheel_up', self.increase_fov)
+            self.core.accept('wheel_down', self.decrease_fov)
+        self.core.accept('escape', self.on_esc_button)
 
     def load_view(self):
         self.core.get_active_view().close_view()
@@ -126,3 +129,16 @@ class Scene3DView(View):
         if self.min_fov <= new_vertical_fov:
             self.core.camLens.setFov(hfov=self.fov_coefficient * new_vertical_fov, vfov=new_vertical_fov)
             self.zoom_level -= 0.01
+
+    def on_esc_button(self):
+        if self.is_pause_on == False:
+            self.is_pause_on = True
+            self.core.set_active_view(self.core.pause_menu_view)
+            self.core.ignore('mouse1')
+            self.core.ignore('mouse1-up')
+            self.core.ignore('wheel_up')
+            self.core.ignore('wheel_down')
+        else:
+            self.is_pause_on = False
+            self.core.set_active_view(self.core.scene_3d_view)
+            self.set_up_controls()
