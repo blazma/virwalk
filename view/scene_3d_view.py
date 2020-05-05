@@ -1,16 +1,15 @@
 from view.view import View
 from direct.task import Task
-from pathlib import Path
-from view.minimap import Minimap
 import math
 
 
 class Scene3DView(View):
     def __init__(self, core):
         super().__init__(core)
-        self.scene = None
+        self.scene = self.core.scene_3d_model
         self.loader = self.core.loader
         self.render = self.core.render
+        self.minimap = self.core.minimap
 
         self.task = None
         self.mouse_x, self.mouse_y = 0, 0
@@ -27,11 +26,7 @@ class Scene3DView(View):
         self.task_manager = Task.TaskManager()
         self.camera = self.core.camera
         self.location = self.core.active_location
-        self.model_path = Path("resource/cylinder.egg")
-        self.minimap = Minimap(self.core)
         self.is_pause_on = False
-        self.set_up_controls()
-
 
     def set_up_controls(self):
         if not self.is_pause_on:
@@ -40,20 +35,19 @@ class Scene3DView(View):
             self.core.accept('mouse1-up', self.on_mouse_release)
             self.core.accept('wheel_up', self.on_wheel_up)
             self.core.accept('wheel_down', self.on_wheel_down)
+            self.core.accept('space', self.change_location)
         self.core.accept('escape', self.on_esc_button)
 
     def load_view(self):
         self.core.get_active_view().close_view()
-        self.scene = self.loader.loadModel(self.model_path)
-        active_texture = self.core.get_active_texture()
-        texture_path = Path("resource/{}".format(active_texture))
-        texture = self.loader.loadTexture(texture_path)
+        texture = self.core.get_active_location().get_texture()
         self.scene.setTexture(texture)
         self.scene.reparentTo(self.render)
         self.scene.setScale(2.0, 2.0, 2.0)
         self.scene.setPos(self.camera.getPos())
-        self.minimap.show()
         self.core.active_location.set_to_active()
+        self.minimap.show()
+        self.set_up_controls()
 
     def close_view(self):
         pass
@@ -148,3 +142,8 @@ class Scene3DView(View):
             self.is_pause_on = False
             self.core.set_active_view(self.core.scene_3d_view)
             self.set_up_controls()
+
+    def change_location(self):
+        neighbor_id = self.core.get_active_location().neighbors[0]
+        neighbor = self.core.find_location_by_id(neighbor_id)
+        self.core.set_active_location(neighbor)
