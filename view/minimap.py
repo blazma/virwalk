@@ -4,14 +4,26 @@ from panda3d.core import LineSegs
 
 
 class Minimap:
+    MINIMAP_POSITION = (0.7, 0.0, -0.7)
+    MINIMAP_SCALE = 0.25
+    LINE_THICKNESS = 2.25
+
     def __init__(self, core):
         self.core = core
         self.locations = self.core.locations
         self.screen = DirectFrame(frameColor=(0, 0, 0, 1), parent=self.core.render2d)
-        self.map = OnscreenImage(image="resource/minimap.png", pos=(0.7, 0.0, -0.7), scale=0.25, parent=self.screen)
-        self.draw_points()
+        self.map = None
+
+        self.draw_background()
         self.draw_lines()
+        self.draw_points()
         self.screen.hide()
+
+    def draw_background(self):
+        background_path = self.core.PATHS["MINIMAP_BG"]
+        position = self.MINIMAP_POSITION
+        scale = self.MINIMAP_SCALE
+        self.map = OnscreenImage(image=background_path, pos=position, scale=scale, parent=self.screen)
 
     def draw_points(self):
         for location in self.locations:
