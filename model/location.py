@@ -6,7 +6,7 @@ class Location(Actor.Actor):
     MODEL_PATH = "resource/point.egg"
 
     def __init__(self, id, x, y, neighbors, texture):
-        super().__init__(self.MODEL_PATH)
+        super().__init__()#self.MODEL_PATH)
         self.id = id
         self.x = x
         self.y = y

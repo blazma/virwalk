@@ -7,12 +7,15 @@ from direct.showbase.ShowBase import ShowBase
 from direct.showbase.DirectObject import DirectObject
 from panda3d.core import WindowProperties
 from pathlib import Path
+import numpy as np
+import math
 import csv
 
 
 class Core(ShowBase, DirectObject):
     WINDOW_WIDTH = 800
     WINDOW_HEIGHT = 600
+    REFERENCE_ANGLE = 188
     PATHS = {
         "3D_SCENE_MODEL": "resource/cylinder.egg",
         "LOCATIONS_DB": "resource/location_file.txt",
@@ -27,9 +30,11 @@ class Core(ShowBase, DirectObject):
         self.active_view = None
         self.active_location = None
         self.scene_3d_model = None
+        self.reference_point = None
 
         # load data
         self.load_data()
+        self.set_reference_point()
         self.active_location = self.locations[0]
 
         # define views
@@ -73,6 +78,27 @@ class Core(ShowBase, DirectObject):
                 location.reparentTo(self.render2d)
                 self.locations.append(location)
 
+    @staticmethod
+    def calculate_displacement(origin, target, transpose=False):
+        origin_x, origin_y = origin.get_position()
+        target_x, target_y = target.get_position()
+        if transpose:
+            return np.array([[target_x - origin_x, target_y - origin_y]]).T
+        else:
+            return np.array([target_x - origin_x, target_y - origin_y])
+
+    def set_reference_point(self):
+        theta = 2*math.pi-math.radians(self.REFERENCE_ANGLE)
+        origin = self.locations[0]
+        target = self.locations[1]
+        v = self.calculate_displacement(origin, target, transpose=True)
+        v_norm = math.sqrt(v[0]**2+v[1]**2)
+        rotation_matrix = np.matrix([[math.cos(theta), -math.sin(theta)],
+                                     [math.sin(theta),  math.cos(theta)]])
+        offset_x, offset_y = origin.get_position()
+        self.reference_point = np.array([offset_x, offset_y])+np.transpose((1/v_norm)*rotation_matrix*v)
+        pass
+
     def find_location_by_id(self, id):
         for location in self.locations:
             if location.id == id:
@@ -90,11 +116,17 @@ class Core(ShowBase, DirectObject):
         self.active_view = view
 
     def set_active_location(self, new_location):
+        old_location = self.active_location
         for location in self.locations:
             if location is new_location:
                 location.set_to_active()
-                self.active_location = new_location
+                self.active_location = location
             else:
                 location.set_to_inactive()
         texture = self.active_location.get_texture()
         self.scene_3d_model.setTexture(texture)
+        print(old_location.get_position())
+        print(new_location.get_position())
+        print(self.reference_point)
+        self.reference_point += self.calculate_displacement(old_location, new_location)
+        print(self.reference_point)

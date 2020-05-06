@@ -1,6 +1,8 @@
 from view.view import View
 from direct.task import Task
+from collections import namedtuple
 import math
+import numpy as np
 
 
 class Scene3DView(View):
@@ -42,7 +44,7 @@ class Scene3DView(View):
         self.core.get_active_view().close_view()
         texture = self.core.get_active_location().get_texture()
         self.scene.setTexture(texture)
-        self.scene.reparentTo(self.render)
+        #self.scene.reparentTo(self.render)
         self.scene.setScale(2.0, 2.0, 2.0)
         self.scene.setPos(self.camera.getPos())
         self.core.active_location.set_to_active()
@@ -110,6 +112,7 @@ class Scene3DView(View):
         self.update_camera_position()
         if self.task is not None:
             self.task_manager.remove(self.task)
+        print(self.camera.getHpr())
 
     def on_wheel_up(self):
         # ZOOM OUT
