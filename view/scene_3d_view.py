@@ -65,6 +65,8 @@ class Scene3DView(View):
     def load_view(self):
         self.core.get_active_view().close_view()
         texture = self.core.get_active_location().get_texture()
+        self.scene.show()
+        self.is_pause_on = False
         self.scene.setTexture(texture)
         self.scene.reparentTo(self.render)
         self.scene.setScale(2.0, 2.0, 2.0)
@@ -76,7 +78,8 @@ class Scene3DView(View):
         self.options_menu.load_view()
         
     def close_view(self):
-        pass
+        self.scene.hide()
+        self.minimap.hide()
         self.options_menu.close_view()
 
     def load_neighbor_markers(self):
