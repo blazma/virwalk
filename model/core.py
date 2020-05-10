@@ -5,6 +5,7 @@ from view.pause_menu_view import PauseMenuView
 from view.minimap import Minimap
 from direct.showbase.ShowBase import ShowBase
 from direct.showbase.DirectObject import DirectObject
+from direct.actor import Actor
 from panda3d.core import WindowProperties
 from pathlib import Path
 import numpy as np
@@ -24,7 +25,8 @@ class Core(ShowBase, DirectObject):
         "MINIMAP_BG_MODEL": "resource/models/minimap.egg",
         "MINIMAP_POINT_MODEL": "resource/models/point.egg",
         "LOCATION_MARKER_MODEL": "resource/models/arrow.egg",
-        "LOCATION_MARKER_TEXTURE": "resource/textures/arrow.png"
+        "LOCATION_MARKER_TEXTURE": "resource/textures/arrow.png",
+        "INDICATOR_MODEL": "resource/models/indicator.egg"
     }
 
     def __init__(self):
@@ -35,12 +37,13 @@ class Core(ShowBase, DirectObject):
         self.active_location = None
         self.scene_3d_model = None
         self.reference_point = None
+        self.indicator = None
 
         # load data
         self.load_data()
         self.set_reference_point()
         self.set_neighbor_markers()
-        self.active_location = self.locations[0]
+        self.create_direction_indicator()
 
         # define views
         self.main_menu_view = MainMenuView(self)
@@ -83,6 +86,8 @@ class Core(ShowBase, DirectObject):
                 location.reparentTo(self.render2d)
                 self.locations.append(location)
 
+        self.active_location = self.locations[0]
+
     @staticmethod
     def calculate_displacement(origin_pos, target_pos, transpose=False):
         origin_x, origin_y = origin_pos
@@ -104,6 +109,14 @@ class Core(ShowBase, DirectObject):
         reference_point_matrix = np.array([offset_x, offset_y])+np.transpose((1/v_norm)*rotation_matrix*v)
         self.reference_point = reference_point_matrix.tolist()[0]
 
+    def calculate_angle(self, v, w):
+        v_x, v_y = v
+        w_x, w_y = w
+        dot_product = v_x * w_x + v_y * w_y
+        v_norm = math.sqrt(v_x ** 2 + v_y ** 2)
+        w_norm = math.sqrt(w_x ** 2 + w_y ** 2)
+        return math.degrees(math.acos(dot_product / (v_norm * w_norm)))
+
     def set_neighbor_markers(self):
         marker_texture_path = self.PATHS["MINIMAP_BG_TEXTURE"]
         marker_texture = self.loader.loadTexture(marker_texture_path)
@@ -112,16 +125,11 @@ class Core(ShowBase, DirectObject):
             for neighbor_id in location.get_neighbors():
                 neighbor = self.find_location_by_id(neighbor_id)
                 neighbor_pos = neighbor.get_position()
-                neighbor_displaced = self.calculate_displacement(location_pos, neighbor_pos)
-                neighbor_displaced_x, neighbor_displaced_y = neighbor_displaced.tolist()
-
-                reference_displaced = self.calculate_displacement(location_pos, self.reference_point)
-                reference_displaced_x, reference_displaced_y = reference_displaced.tolist()
-
-                dot_product = neighbor_displaced_x * reference_displaced_x + neighbor_displaced_y * reference_displaced_y
-                displacement_norm = math.sqrt(neighbor_displaced_x ** 2 + neighbor_displaced_y ** 2)
-                reference_norm = math.sqrt(reference_displaced_x ** 2 + reference_displaced_y ** 2)
-                angle = math.degrees(math.acos(dot_product / (displacement_norm * reference_norm)))
+                neighbor_displaced = self.calculate_displacement(location_pos, neighbor_pos).tolist()
+                neighbor_displaced_x, neighbor_displaced_y = neighbor_displaced
+                reference_displaced = self.calculate_displacement(location_pos, self.reference_point).tolist()
+                reference_displaced_x, reference_displaced_y = reference_displaced
+                angle = self.calculate_angle(neighbor_displaced, reference_displaced)
 
                 def reference_line(x_pos):
                     slope = reference_displaced_y / reference_displaced_x
@@ -131,6 +139,19 @@ class Core(ShowBase, DirectObject):
                     angle = 360-angle
 
                 location.add_neighbor_marker(neighbor, angle, marker_texture)
+
+    def create_direction_indicator(self):
+        self.indicator = Actor.Actor(self.PATHS["INDICATOR_MODEL"])
+        self.indicator.setColor(0, 0, 0, 1)
+        self.indicator.setScale(Location.SCALE)
+        loc_x, loc_y = self.active_location.get_position()
+        self.indicator.setPos(loc_x, 0, loc_y)
+
+        # the indicator faces north by default but we want it to face the reference angle
+        indicator_vector = self.calculate_displacement(origin_pos=(loc_x, loc_y), target_pos=(loc_x, 1)).tolist()
+        reference_displaced = self.calculate_displacement(origin_pos=(loc_x, loc_y), target_pos=self.reference_point).tolist()
+        angle = self.calculate_angle(indicator_vector, reference_displaced)
+        self.indicator.setR(angle)
 
     def find_location_by_id(self, id):
         for location in self.locations:

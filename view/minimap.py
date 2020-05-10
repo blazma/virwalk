@@ -17,9 +17,11 @@ class Minimap:
         self.screen = DirectFrame(frameColor=(0, 0, 0, 0), pos=self.MINIMAP_POSITION,
                                   scale=scaling_vector, parent=self.core.render2d)
         self.map = None
+        self.indicator = self.core.indicator
         self.draw_background()
         self.draw_lines()
         self.draw_points()
+        self.draw_indicator()
         self.screen.hide()
 
     def draw_background(self):
@@ -37,6 +39,12 @@ class Minimap:
             location.setBin("fixed", 0)
             location.setDepthTest(False)
             location.setDepthWrite(False)
+
+    def draw_indicator(self):
+        self.indicator.reparentTo(self.screen)
+        self.indicator.setBin("fixed", 0)
+        self.indicator.setDepthTest(False)
+        self.indicator.setDepthWrite(False)
 
     def draw_lines(self):
         cm = CardMaker('lines_background_node')

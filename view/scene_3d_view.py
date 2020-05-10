@@ -41,6 +41,7 @@ class Scene3DView(View):
         self.task_manager = Task.TaskManager()
         self.camera = self.core.camera
         self.location = self.core.active_location
+        self.indicator = self.core.indicator
         self.is_pause_on = False
 
     def set_up_controls(self):
@@ -75,6 +76,10 @@ class Scene3DView(View):
             marker_center_node.setH(angle)
             marker_model.show()
 
+    def update_indicator_angle(self, delta_angle):
+        current_angle = self.indicator.getR()
+        self.indicator.setR(current_angle - delta_angle)
+
     def update_mouse_position(self):
         self.mouse_x = self.core.mouseWatcherNode.getMouseX()
         self.mouse_y = self.core.mouseWatcherNode.getMouseY()
@@ -107,6 +112,7 @@ class Scene3DView(View):
             total_angle_y = p-angle_y
 
         self.camera.setHpr(total_angle_x, total_angle_y, 0)
+        self.update_indicator_angle(angle_x)
 
     @staticmethod
     def fov(x):
@@ -134,7 +140,6 @@ class Scene3DView(View):
         if self.task is not None:
             self.task_manager.remove(self.task)
 
-        print(self.camera.getH())
         mpos = self.core.mouseWatcherNode.getMouse()
         self.pickerRay.setFromLens(self.core.camNode, mpos.getX(), mpos.getY())
         self.collision_traverser.traverse(self.render)
@@ -186,8 +191,8 @@ class Scene3DView(View):
         for neighbor_id in markers:
             angle, model = markers[neighbor_id]
             model.hide()
-        #neighbor_id = active_location.neighbors[0]  # TODO: this will change to whatever the user clicked on
-        #neighbor = self.core.find_location_by_id(neighbor_id)
         self.core.set_active_location(new_location)
         self.location = self.core.active_location
         self.load_neighbor_markers()
+        loc_x, loc_y = self.location.get_position()
+        self.indicator.setPos(loc_x, 0, loc_y)
