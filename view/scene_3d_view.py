@@ -135,8 +135,13 @@ class Scene3DView(View):
             self.task_manager.remove(self.task)
 
         print(self.camera.getH())
-        mpos = self.core.mouseWatcherNode.getMouse()
-        self.pickerRay.setFromLens(self.core.camNode, mpos.getX(), mpos.getY())
+        
+        try:
+            mpos = self.core.mouseWatcherNode.getMouse()
+            self.pickerRay.setFromLens(self.core.camNode, mpos.getX(), mpos.getY())
+        except:
+            self.pickerRay.setFromLens(self.core.camNode, self.mouse_x, self.mouse_y)
+
         self.collision_traverser.traverse(self.render)
         # Assume for simplicity's sake that myHandler is a CollisionHandlerQueue.
         if self.collision_handler.getNumEntries() > 0:
