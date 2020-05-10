@@ -7,14 +7,17 @@ import logging
 class Logger():
     RUNTIME_LOG_PATH = Path("logs/runtime.txt")
     LOGGING_MESSAGES_PATH = Path("logs/logging_messages.log")
+    DEBUGGER = None
 
 
     @classmethod
     def write_logfile(cls, message):
-        with open(cls.RUNTIME_LOG_PATH, "a") as log_file:
-            current_time = time.strftime("%H:%M:%S ")
-            message = current_time + message
-            log_file.write(message)
+        print(cls.DEBUGGER)
+        if cls.DEBUGGER == 1:
+            with open(cls.RUNTIME_LOG_PATH, "a") as log_file:
+                current_time = time.strftime("%H:%M:%S ")
+                message = current_time + message
+                log_file.write(message)
 
     @classmethod
     def clear_logs(cls):

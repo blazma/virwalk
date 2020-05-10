@@ -1,0 +1,26 @@
+VirWalk runtime file - 2020-05-11 00:48:49 
+Program started
+
+00:48:50 process_coords () {} 1.239776611328125e-05 
+00:48:51 process_texture () {} 1.1481037139892578 
+00:48:51 process_coords () {} 1.0728836059570312e-05 
+00:48:52 process_texture () {} 1.4529638290405273 
+00:48:52 process_coords () {} 8.58306884765625e-06 
+00:48:54 process_texture () {} 1.4493768215179443 
+00:48:54 process_coords () {} 1.0251998901367188e-05 
+00:48:55 process_texture () {} 1.3646490573883057 
+00:48:55 load_data (<model.core.Core object at 0x7f6db4f13d68>,) {} 5.425714731216431 
+00:48:55 set_reference_point (<model.core.Core object at 0x7f6db4f13d68>,) {} 0.00033783912658691406 
+00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 1) {} 2.1457672119140625e-06 
+00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 0) {} 2.1457672119140625e-06 
+00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 2) {} 7.152557373046875e-07 
+00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 1) {} 7.152557373046875e-07 
+00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 3) {} 7.152557373046875e-07 
+00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 2) {} 7.152557373046875e-07 
+00:48:55 set_neighbor_markers (<model.core.Core object at 0x7f6db4f13d68>,) {} 0.09216523170471191 
+00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 1) {} 1.430511474609375e-06 
+00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 0) {} 7.152557373046875e-07 
+00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 2) {} 2.384185791015625e-07 
+00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 1) {} 4.76837158203125e-07 
+00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 3) {} 4.76837158203125e-07 
+00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 2) {} 4.76837158203125e-07 
