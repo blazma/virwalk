@@ -1,6 +1,10 @@
+from panda3d.core import CollisionTraverser
+from panda3d.core import CollisionHandlerQueue
+from panda3d.core import CollisionNode
+from panda3d.core import CollisionRay
+from panda3d.core import GeomNode
 from view.view import View
 from direct.task import Task
-from pathlib import Path
 import math
 from view.options_menu import OptionsMenu
 
@@ -8,9 +12,13 @@ from view.options_menu import OptionsMenu
 class Scene3DView(View):
     def __init__(self, core):
         super().__init__(core)
-        self.scene = None
+        self.scene = self.core.scene_3d_model
         self.loader = self.core.loader
         self.render = self.core.render
+        self.minimap = self.core.minimap
+        self.camera = self.core.camera
+        self.location = self.core.active_location
+        self.indicator = self.core.indicator
 
         self.task = None
         self.mouse_x, self.mouse_y = 0, 0
@@ -24,17 +32,22 @@ class Scene3DView(View):
         self.max_fov = self.fov(1/2)
         self.fov_coefficient = self.horizontal_fov/self.vertical_fov
 
-        self.task_manager = Task.TaskManager()
-        self.camera = self.core.camera
-        self.location = self.core.origin
-        self.model_path = Path("resource/cylinder.egg")
+        # collision detector TODO: find a new location for
+        self.collision_traverser = CollisionTraverser()
+        self.collision_handler = CollisionHandlerQueue()
+        self.pickerNode = CollisionNode('mouseRay')
+        self.pickerNP = self.core.camera.attachNewNode(self.pickerNode)
+        self.pickerNode.setFromCollideMask(GeomNode.getDefaultCollideMask())
+        self.pickerRay = CollisionRay()
+        self.pickerNode.addSolid(self.pickerRay)
+        self.collision_traverser.addCollider(self.pickerNP, self.collision_handler)
 
-        # variables for view management
+        self.task_manager = Task.TaskManager()
+        self.target_location = None
+        self.is_clicked_on_target = False
         self.is_pause_on = False
         self.is_options_on = False
         self.options_menu = OptionsMenu(self.core)
-
-        self.set_up_controls()
 
     def set_up_controls(self):
         if not self.is_pause_on:
@@ -47,18 +60,32 @@ class Scene3DView(View):
 
     def load_view(self):
         self.core.get_active_view().close_view()
-        self.scene = self.loader.loadModel(self.model_path)
-        texture_path = Path("resource/photo01.jpg")
-        texture = self.loader.loadTexture(texture_path)
+        texture = self.core.get_active_location().get_texture()
         self.scene.setTexture(texture)
         self.scene.reparentTo(self.render)
         self.scene.setScale(2.0, 2.0, 2.0)
         self.scene.setPos(self.camera.getPos())
+        self.core.active_location.set_to_active()
+        self.load_neighbor_markers()
+        self.minimap.show()
+        self.set_up_controls()
         self.options_menu.load_view()
-
+        
     def close_view(self):
         pass
         self.options_menu.close_view()
+
+    def load_neighbor_markers(self):
+        for neighbor_id in self.location.get_neighbors():
+            marker_center_node = self.scene.attachNewNode("{}_marker_center_node".format(neighbor_id))
+            angle, marker_model = self.location.neighbor_markers[neighbor_id]
+            marker_model.reparentTo(marker_center_node)
+            marker_center_node.setH(angle)
+            marker_model.show()
+
+    def update_indicator_angle(self, delta_angle):
+        current_angle = self.indicator.getR()
+        self.indicator.setR(current_angle - delta_angle)
 
     def update_mouse_position(self):
         self.mouse_x = self.core.mouseWatcherNode.getMouseX()
@@ -92,6 +119,7 @@ class Scene3DView(View):
             total_angle_y = p-angle_y
 
         self.camera.setHpr(total_angle_x, total_angle_y, 0)
+        self.update_indicator_angle(angle_x)
 
     @staticmethod
     def fov(x):
@@ -114,10 +142,29 @@ class Scene3DView(View):
         self.task = self.task_manager.add(on_mouse_task)
         self.update_mouse_position()
 
+        try:
+            mpos = self.core.mouseWatcherNode.getMouse()
+            self.pickerRay.setFromLens(self.core.camNode, mpos.getX(), mpos.getY())
+        except:
+            self.pickerRay.setFromLens(self.core.camNode, self.mouse_x, self.mouse_y)
+
+        self.collision_traverser.traverse(self.render)
+        if self.collision_handler.getNumEntries() > 0:
+            self.collision_handler.sortEntries()
+            pickedObj = self.collision_handler.getEntry(0).getIntoNodePath()
+            pickedObj = pickedObj.findNetPythonTag('marker_tag')
+            if not pickedObj.isEmpty():
+                self.target_location = next(self.core.find_location_by_marker(pickedObj))
+                self.is_clicked_on_target = True
+
     def on_mouse_release(self):
         self.update_camera_position()
         if self.task is not None:
             self.task_manager.remove(self.task)
+
+        if self.is_clicked_on_target:
+            self.change_location(self.target_location)
+            self.is_clicked_on_target = False
 
     def on_wheel_up(self):
         # ZOOM OUT
@@ -156,3 +203,16 @@ class Scene3DView(View):
         self.core.ignore('mouse1-up')
         self.core.ignore('wheel_up')
         self.core.ignore('wheel_down')
+
+    def change_location(self, new_location):
+        active_location = self.core.get_active_location()
+        markers = active_location.get_markers()
+        for neighbor_id in markers:
+            angle, model = markers[neighbor_id]
+            model.hide()
+        self.core.set_active_location(new_location)
+        self.location = self.core.active_location
+        self.load_neighbor_markers()
+        loc_x, loc_y = self.location.get_position()
+        self.indicator.setPos(loc_x, 0, loc_y)
+
