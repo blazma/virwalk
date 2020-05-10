@@ -30,7 +30,6 @@ class Minimap:
         self.map = Actor(background_model_path)
         self.map.setTransparency(TransparencyAttrib.MAlpha)
         texture = self.core.loader.loadTexture(background_texture_path)
-        self.map.setColor(1, 1, 1, 1)
         self.map.setTexture(texture)
         self.map.reparentTo(self.screen)
 
