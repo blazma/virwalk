@@ -14,18 +14,21 @@ class Minimap:
         self.core = core
         self.locations = self.core.locations
         scaling_vector = (self.MINIMAP_SCALE/self.core.ASPECT_RATIO, 0, self.MINIMAP_SCALE)
-        self.screen = DirectFrame(frameColor=(0, 0, 0, 0), pos=self.MINIMAP_POSITION,
+        self.screen = DirectFrame(frameColor=(0, 0, 0, 1), pos=self.MINIMAP_POSITION,
                                   scale=scaling_vector, parent=self.core.render2d)
         self.map = None
+        self.indicator = self.core.indicator
         self.draw_background()
         self.draw_lines()
         self.draw_points()
+        self.draw_indicator()
         self.screen.hide()
 
     def draw_background(self):
         background_model_path = self.core.PATHS["MINIMAP_BG_MODEL"]
         background_texture_path = self.core.PATHS["MINIMAP_BG_TEXTURE"]
         self.map = Actor(background_model_path)
+        self.map.setTransparency(TransparencyAttrib.MAlpha)
         texture = self.core.loader.loadTexture(background_texture_path)
         self.map.setColor(1, 1, 1, 1)
         self.map.setTexture(texture)
@@ -37,6 +40,12 @@ class Minimap:
             location.setBin("fixed", 0)
             location.setDepthTest(False)
             location.setDepthWrite(False)
+
+    def draw_indicator(self):
+        self.indicator.reparentTo(self.screen)
+        self.indicator.setBin("fixed", 0)
+        self.indicator.setDepthTest(False)
+        self.indicator.setDepthWrite(False)
 
     def draw_lines(self):
         cm = CardMaker('lines_background_node')
@@ -53,7 +62,7 @@ class Minimap:
             loc_x, loc_y = location.get_position()
             linesegs.moveTo(loc_x, 0.0, loc_y)
             for neighbor_id in location.get_neighbors():
-                neighbor = self.core.find_location_by_id(neighbor_id)
+                neighbor = next(self.core.find_location_by_id(neighbor_id))
                 nb_x, nb_y = neighbor.get_position()
                 linesegs.drawTo(nb_x, 0.0, nb_y)
                 linesegs.moveTo(loc_x, 0.0, loc_y)

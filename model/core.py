@@ -6,6 +6,7 @@ from view.pause_menu_view import PauseMenuView
 from view.minimap import Minimap
 from direct.showbase.ShowBase import ShowBase
 from direct.showbase.DirectObject import DirectObject
+from direct.actor import Actor
 from panda3d.core import WindowProperties
 from pathlib import Path
 import numpy as np
@@ -37,7 +38,8 @@ class Core(ShowBase, DirectObject):
         "MINIMAP_BG_MODEL": "resource/models/minimap.egg",
         "MINIMAP_POINT_MODEL": "resource/models/point.egg",
         "LOCATION_MARKER_MODEL": "resource/models/arrow.egg",
-        "LOCATION_MARKER_TEXTURE": "resource/textures/arrow.png"
+        "LOCATION_MARKER_TEXTURE": "resource/textures/arrow.png",
+        "INDICATOR_MODEL": "resource/models/indicator.egg"
     }
 
     def __init__(self):
@@ -48,12 +50,13 @@ class Core(ShowBase, DirectObject):
         self.active_location = None
         self.scene_3d_model = None
         self.reference_point = None
+        self.indicator = None
 
         # load data
         self.load_data()
         self.set_reference_point()
         self.set_neighbor_markers()
-        self.active_location = self.locations[0]
+        self.create_direction_indicator()
 
         # define views
         self.main_menu_view = MainMenuView(self)
@@ -64,6 +67,12 @@ class Core(ShowBase, DirectObject):
         # set window size, load first view
         self.set_window_size()
         self.set_active_view(self.main_menu_view)
+
+        # fine-tuning parameters
+        self.rot_sens_unit = 1.0
+        self.zoom_sens_unit = 0.01
+        self.rotation_sensitivity = 1.0
+        self.zoom_sensitivity = 0.01
 
     def set_window_size(self):
         props = WindowProperties()
@@ -104,6 +113,8 @@ class Core(ShowBase, DirectObject):
         except:
             Logger.error('{} file not found!'.format(self.PATHS["LOCATIONS_DB"]))
 
+        self.active_location = self.locations[0]
+
     @staticmethod
     def calculate_displacement(origin_pos, target_pos, transpose=False):
         origin_x, origin_y = origin_pos
@@ -126,6 +137,14 @@ class Core(ShowBase, DirectObject):
         reference_point_matrix = np.array([offset_x, offset_y])+np.transpose((1/v_norm)*rotation_matrix*v)
         self.reference_point = reference_point_matrix.tolist()[0]
 
+    def calculate_angle(self, v, w):
+        v_x, v_y = v
+        w_x, w_y = w
+        dot_product = v_x * w_x + v_y * w_y
+        v_norm = math.sqrt(v_x ** 2 + v_y ** 2)
+        w_norm = math.sqrt(w_x ** 2 + w_y ** 2)
+        return math.degrees(math.acos(dot_product / (v_norm * w_norm)))
+
     @Logger.runtime
     def set_neighbor_markers(self):
         marker_texture_path = self.PATHS["MINIMAP_BG_TEXTURE"]
@@ -133,18 +152,13 @@ class Core(ShowBase, DirectObject):
         for location in self.locations:
             location_pos = location.get_position()
             for neighbor_id in location.get_neighbors():
-                neighbor = self.find_location_by_id(neighbor_id)
+                neighbor = next(self.find_location_by_id(neighbor_id))
                 neighbor_pos = neighbor.get_position()
-                neighbor_displaced = self.calculate_displacement(location_pos, neighbor_pos)
-                neighbor_displaced_x, neighbor_displaced_y = neighbor_displaced.tolist()
-
-                reference_displaced = self.calculate_displacement(location_pos, self.reference_point)
-                reference_displaced_x, reference_displaced_y = reference_displaced.tolist()
-
-                dot_product = neighbor_displaced_x * reference_displaced_x + neighbor_displaced_y * reference_displaced_y
-                displacement_norm = math.sqrt(neighbor_displaced_x ** 2 + neighbor_displaced_y ** 2)
-                reference_norm = math.sqrt(reference_displaced_x ** 2 + reference_displaced_y ** 2)
-                angle = math.degrees(math.acos(dot_product / (displacement_norm * reference_norm)))
+                neighbor_displaced = self.calculate_displacement(location_pos, neighbor_pos).tolist()
+                neighbor_displaced_x, neighbor_displaced_y = neighbor_displaced
+                reference_displaced = self.calculate_displacement(location_pos, self.reference_point).tolist()
+                reference_displaced_x, reference_displaced_y = reference_displaced
+                angle = self.calculate_angle(neighbor_displaced, reference_displaced)
 
                 def reference_line(x_pos):
                     slope = reference_displaced_y / reference_displaced_x
@@ -155,23 +169,33 @@ class Core(ShowBase, DirectObject):
 
                 location.add_neighbor_marker(neighbor, angle, marker_texture)
 
+    def create_direction_indicator(self):
+        self.indicator = Actor.Actor(self.PATHS["INDICATOR_MODEL"])
+        self.indicator.setColor(0, 0, 0, 1)
+        self.indicator.setScale(Location.SCALE)
+        loc_x, loc_y = self.active_location.get_position()
+        self.indicator.setPos(loc_x, 0, loc_y)
+
+        # the indicator faces north by default but we want it to face the reference angle
+        indicator_vector = self.calculate_displacement(origin_pos=(loc_x, loc_y), target_pos=(loc_x, 1)).tolist()
+        reference_displaced = self.calculate_displacement(origin_pos=(loc_x, loc_y), target_pos=self.reference_point).tolist()
+        angle = self.calculate_angle(indicator_vector, reference_displaced)
+        self.indicator.setR(angle)
+
     @Logger.runtime
     def find_location_by_id(self, id):
         for location in self.locations:
             if location.id == id:
-                return location
-        return None
+                yield location
 
     @Logger.runtime
     def find_location_by_marker(self, marker):
         for location in self.locations:
             for neighbor_id in location.get_markers():
-                neighbor = self.find_location_by_id(neighbor_id)
+                neighbor = next(self.find_location_by_id(neighbor_id))
                 _, loc_marker = location.get_markers()[neighbor_id]
                 if marker == loc_marker:
-                    return neighbor
-                print(location.id)
-        return None
+                    yield neighbor
 
     def get_active_view(self):
         return self.active_view
@@ -180,11 +204,21 @@ class Core(ShowBase, DirectObject):
         return self.active_location
 
     def set_active_view(self, view):
+        if self.active_view!= None:
+            self.active_view.close_view()
         view.load_view()
         self.active_view = view
         Logger.log_info('Active view has been set to {}'.format(view))
 
-    def set_active_location(self, new_location): #ide
+    def set_rot_sens(self):
+        self.rotation_sensitivity = self.rot_sens_unit * self.scene_3d_view.options_menu.rot_sens_slider['value']
+        print(self.scene_3d_view.options_menu.rot_sens_slider['value'], self.rotation_sensitivity)
+
+    def set_zoom_sens(self):
+        self.zoom_sensitivity = self.zoom_sens_unit * self.scene_3d_view.options_menu.zoom_sens_slider['value']
+        print(self.scene_3d_view.options_menu.zoom_sens_slider['value'], self.zoom_sensitivity)
+
+    def set_active_location(self, new_location):
         old_location = self.active_location
         old_location_pos = old_location.get_position()
         new_location_pos = new_location.get_position()

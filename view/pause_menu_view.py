@@ -18,6 +18,7 @@ class PauseMenuView(View):
 
     def on_start_button(self):
         self.close_view()
+        self.core.scene_3d_view.options_menu.wrap()
         self.core.scene_3d_view.is_pause_on = False
         self.core.set_active_view(self.core.scene_3d_view)
         self.core.scene_3d_view.set_up_controls()
