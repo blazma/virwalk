@@ -12,7 +12,6 @@ class Logger():
 
     @classmethod
     def write_logfile(cls, message):
-        print(cls.DEBUGGER)
         if cls.DEBUGGER == 1:
             with open(cls.RUNTIME_LOG_PATH, "a") as log_file:
                 current_time = time.strftime("%H:%M:%S ")
@@ -30,7 +29,6 @@ class Logger():
 
         with open(Logger.RUNTIME_LOG_PATH, 'w') as log_file:
             current_time = time.strftime("%H:%M:%S")
-            print(current_time)
             runtime_log_header = "VirWalk runtime file - {} {} {}".format(date.today(), current_time,
                                                                   "\nProgram started\n\n")
             log_file.write(runtime_log_header)
