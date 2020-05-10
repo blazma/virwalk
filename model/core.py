@@ -33,6 +33,12 @@ class Core(ShowBase, DirectObject):
         self.set_window_size()
         self.set_active_view(self.main_menu_view)
 
+        # fine-tuning parameters
+        self.rot_sens_unit = 1.0
+        self.zoom_sens_unit = 0.01
+        self.rotation_sensitivity = 1.0
+        self.zoom_sensitivity = 0.01
+
     def set_window_size(self):
         props = WindowProperties()
         props.setSize(self.WINDOW_WIDTH, self.WINDOW_HEIGHT)
@@ -55,3 +61,11 @@ class Core(ShowBase, DirectObject):
             self.active_view.close_view()
         view.load_view()
         self.active_view = view
+
+    def set_rot_sens(self):
+        self.rotation_sensitivity = self.rot_sens_unit * self.scene_3d_view.options_menu.rot_sens_slider['value']
+        print(self.scene_3d_view.options_menu.rot_sens_slider['value'], self.rotation_sensitivity)
+
+    def set_zoom_sens(self):
+        self.zoom_sensitivity = self.zoom_sens_unit * self.scene_3d_view.options_menu.zoom_sens_slider['value']
+        print(self.scene_3d_view.options_menu.zoom_sens_slider['value'], self.zoom_sensitivity)

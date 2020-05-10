@@ -28,7 +28,12 @@ class Scene3DView(View):
         self.camera = self.core.camera
         self.location = self.core.origin
         self.model_path = Path("resource/cylinder.egg")
+
+        # variables for view management
         self.is_pause_on = False
+        self.is_options_on = False
+        self.options_menu = OptionsMenu(self.core)
+
         self.set_up_controls()
 
     def set_up_controls(self):
@@ -49,7 +54,6 @@ class Scene3DView(View):
         self.scene.reparentTo(self.render)
         self.scene.setScale(2.0, 2.0, 2.0)
         self.scene.setPos(self.camera.getPos())
-        self.options_menu = OptionsMenu(self.core)
         self.options_menu.load_view()
 
     def close_view(self):
@@ -76,8 +80,8 @@ class Scene3DView(View):
         h, p, r = self.camera.getHpr()  # Euler angles
         delta_x = (new_mouse_x - self.mouse_x)/2
         delta_y = (new_mouse_y - self.mouse_y)/2
-        angle_x = self.horizontal_fov*math.asin(delta_x)
-        angle_y = self.vertical_fov*math.asin(delta_y)
+        angle_x = self.core.rotation_sensitivity*self.horizontal_fov*math.asin(delta_x)
+        angle_y = self.core.rotation_sensitivity*self.vertical_fov*math.asin(delta_y)
         min_p = self.vertical_fov/2-math.degrees(math.atan(1/2))
         max_p = -min_p
 
@@ -124,7 +128,7 @@ class Scene3DView(View):
         # endpoint in this sense means the upper/lowermost point still in the frame, on the surface of the cylinder
         if origin_endpoint_distance <= 1/2:  # due to the cylinder being 1 unit tall from lowermost point to uppermost
             self.core.camLens.setFov(hfov=self.fov_coefficient * new_vertical_fov, vfov=new_vertical_fov)
-            self.zoom_level += 0.01
+            self.zoom_level += self.core.zoom_sensitivity
 
     def on_wheel_down(self):
         # ZOOM IN
@@ -132,7 +136,7 @@ class Scene3DView(View):
         new_vertical_fov = self.vertical_fov + self.delta_fov
         if self.min_fov <= new_vertical_fov:
             self.core.camLens.setFov(hfov=self.fov_coefficient * new_vertical_fov, vfov=new_vertical_fov)
-            self.zoom_level -= 0.01
+            self.zoom_level -= self.core.zoom_sensitivity
 
     def on_esc_button(self):
         if not self.is_pause_on:
@@ -146,3 +150,9 @@ class Scene3DView(View):
             self.is_pause_on = False
             self.core.set_active_view(self.core.scene_3d_view)
             self.set_up_controls()
+
+    def ignore_mouse(self):
+        self.core.ignore('mouse1')
+        self.core.ignore('mouse1-up')
+        self.core.ignore('wheel_up')
+        self.core.ignore('wheel_down')
