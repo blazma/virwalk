@@ -62,7 +62,7 @@ class Minimap:
             loc_x, loc_y = location.get_position()
             linesegs.moveTo(loc_x, 0.0, loc_y)
             for neighbor_id in location.get_neighbors():
-                neighbor = self.core.find_location_by_id(neighbor_id)
+                neighbor = next(self.core.find_location_by_id(neighbor_id))
                 nb_x, nb_y = neighbor.get_position()
                 linesegs.drawTo(nb_x, 0.0, nb_y)
                 linesegs.moveTo(loc_x, 0.0, loc_y)

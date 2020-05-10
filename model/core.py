@@ -123,7 +123,7 @@ class Core(ShowBase, DirectObject):
         for location in self.locations:
             location_pos = location.get_position()
             for neighbor_id in location.get_neighbors():
-                neighbor = self.find_location_by_id(neighbor_id)
+                neighbor = next(self.find_location_by_id(neighbor_id))
                 neighbor_pos = neighbor.get_position()
                 neighbor_displaced = self.calculate_displacement(location_pos, neighbor_pos).tolist()
                 neighbor_displaced_x, neighbor_displaced_y = neighbor_displaced
@@ -156,18 +156,15 @@ class Core(ShowBase, DirectObject):
     def find_location_by_id(self, id):
         for location in self.locations:
             if location.id == id:
-                return location
-        return None
+                yield location
 
     def find_location_by_marker(self, marker):
         for location in self.locations:
             for neighbor_id in location.get_markers():
-                neighbor = self.find_location_by_id(neighbor_id)
+                neighbor = next(self.find_location_by_id(neighbor_id))
                 _, loc_marker = location.get_markers()[neighbor_id]
                 if marker == loc_marker:
-                    return neighbor
-                print(location.id)
-        return None
+                    yield neighbor
 
     def get_active_view(self):
         return self.active_view
