@@ -1,4 +1,5 @@
 from model.location import Location
+from model.logging import Logger
 from view.main_menu_view import MainMenuView
 from view.scene_3d_view import Scene3DView
 from view.pause_menu_view import PauseMenuView
@@ -11,7 +12,19 @@ from pathlib import Path
 import numpy as np
 import math
 import csv
+import time
 
+
+def timeit(method):
+    def timed(*args, **kw):
+        ts = time.time()
+        result = method(*args, **kw)
+        te = time.time()
+
+        print(method.__name__, args, kw, te - ts, "halál")
+        return result
+
+    return timed
 
 class Core(ShowBase, DirectObject):
     WINDOW_WIDTH = 800
@@ -66,8 +79,10 @@ class Core(ShowBase, DirectObject):
         props.setSize(self.WINDOW_WIDTH, self.WINDOW_HEIGHT)
         self.win.requestProperties(props)
 
+    @Logger.runtime
     def load_data(self):
 
+        @Logger.runtime
         def process_coords():
             split_coords = row["map_coord"].split(',')
             map_x, map_y = [int(i) for i in split_coords]
@@ -75,22 +90,28 @@ class Core(ShowBase, DirectObject):
             map_y_normed = -(((map_y*2) / 549) - 1)
             return map_x_normed, map_y_normed
 
+        @Logger.runtime
         def process_texture():
             texture_path = Path("resource/textures/{}".format(row["texture"]))
             texture = self.loader.loadTexture(texture_path)
             return texture
 
         self.scene_3d_model = self.loader.loadModel(self.PATHS["3D_SCENE_MODEL"])
-        with open(self.PATHS["LOCATIONS_DB"], "r") as l_file:
-            data = csv.DictReader(l_file, delimiter="|")
-            for row in data:
-                id = int(row["id"])
-                x, y = process_coords()
-                neighbors = [int(neighbor_id) for neighbor_id in row["neighbors"].split(',')]
-                texture = process_texture()
-                location = Location(id, x, y, neighbors, texture)
-                location.reparentTo(self.render2d)
-                self.locations.append(location)
+
+        try:
+            with open(self.PATHS["LOCATIONS_DB"], "r") as l_file:
+                data = csv.DictReader(l_file, delimiter="|")
+                for row in data:
+                    id = int(row["id"])
+                    x, y = process_coords()
+                    neighbors = [int(neighbor_id) for neighbor_id in row["neighbors"].split(',')]
+                    texture = process_texture()
+                    location = Location(id, x, y, neighbors, texture)
+                    location.reparentTo(self.render2d)
+                    self.locations.append(location)
+                Logger.log_info('The locations_db has been loaded')
+        except:
+            Logger.error('{} file not found!'.format(self.PATHS["LOCATIONS_DB"]))
 
         self.active_location = self.locations[0]
 
@@ -103,6 +124,7 @@ class Core(ShowBase, DirectObject):
         else:
             return np.array([target_x - origin_x, target_y - origin_y])
 
+    @Logger.runtime
     def set_reference_point(self):
         theta = 2*math.pi-math.radians(self.REFERENCE_ANGLE)
         origin_pos = self.locations[0].get_position()
@@ -123,6 +145,7 @@ class Core(ShowBase, DirectObject):
         w_norm = math.sqrt(w_x ** 2 + w_y ** 2)
         return math.degrees(math.acos(dot_product / (v_norm * w_norm)))
 
+    @Logger.runtime
     def set_neighbor_markers(self):
         marker_texture_path = self.PATHS["MINIMAP_BG_TEXTURE"]
         marker_texture = self.loader.loadTexture(marker_texture_path)
@@ -159,11 +182,13 @@ class Core(ShowBase, DirectObject):
         angle = self.calculate_angle(indicator_vector, reference_displaced)
         self.indicator.setR(angle)
 
+    @Logger.runtime
     def find_location_by_id(self, id):
         for location in self.locations:
             if location.id == id:
                 yield location
 
+    @Logger.runtime
     def find_location_by_marker(self, marker):
         for location in self.locations:
             for neighbor_id in location.get_markers():
@@ -183,6 +208,7 @@ class Core(ShowBase, DirectObject):
             self.active_view.close_view()
         view.load_view()
         self.active_view = view
+        Logger.log_info('Active view has been set to {}'.format(view))
 
     def set_rot_sens(self):
         self.rotation_sensitivity = self.rot_sens_unit * self.scene_3d_view.options_menu.rot_sens_slider['value']
@@ -205,4 +231,4 @@ class Core(ShowBase, DirectObject):
         texture = self.active_location.get_texture()
         self.scene_3d_model.setTexture(texture)
         self.reference_point += self.calculate_displacement(old_location_pos, new_location_pos)
-
+        Logger.log_info('Active location has been set from {} to {}'.format(old_location.id, new_location.id))

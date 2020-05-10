@@ -5,6 +5,7 @@ from panda3d.core import CollisionRay
 from panda3d.core import GeomNode
 from view.view import View
 from direct.task import Task
+from model.logging import Logger
 import math
 from view.options_menu import OptionsMenu
 
@@ -48,6 +49,9 @@ class Scene3DView(View):
         self.is_pause_on = False
         self.is_options_on = False
         self.options_menu = OptionsMenu(self.core)
+
+    def __repr__(self):
+        return 'scene_3d_view'
 
     def set_up_controls(self):
         if not self.is_pause_on:
@@ -103,6 +107,8 @@ class Scene3DView(View):
         except AssertionError:
             new_mouse_x = self.mouse_x
             new_mouse_y = self.mouse_y
+            Logger.log_warning("Mouse out from the window")
+
 
         h, p, r = self.camera.getHpr()  # Euler angles
         delta_x = (new_mouse_x - self.mouse_x)/2
@@ -147,6 +153,15 @@ class Scene3DView(View):
             self.pickerRay.setFromLens(self.core.camNode, mpos.getX(), mpos.getY())
         except:
             self.pickerRay.setFromLens(self.core.camNode, self.mouse_x, self.mouse_y)
+
+        print(self.camera.getH())
+
+        try:
+            mpos = self.core.mouseWatcherNode.getMouse()
+            self.pickerRay.setFromLens(self.core.camNode, mpos.getX(), mpos.getY())
+        except:
+            self.pickerRay.setFromLens(self.core.camNode, self.mouse_x, self.mouse_y)
+            Logger.log_warning("Mouse out from the window.")
 
         self.collision_traverser.traverse(self.render)
         if self.collision_handler.getNumEntries() > 0:

@@ -13,6 +13,9 @@ class PauseMenuView(View):
         self.back_button = DirectButton(text="Back to the main menu", command=self.on_back_button, pos=(0, 0, -0.4), parent=self.screen, scale=0.1)
         self.screen.hide()
 
+    def __repr__(self):
+        return 'pause_menu_view'
+
     def on_start_button(self):
         self.close_view()
         self.core.scene_3d_view.options_menu.wrap()
