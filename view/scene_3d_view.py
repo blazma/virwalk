@@ -5,6 +5,7 @@ from panda3d.core import CollisionRay
 from panda3d.core import GeomNode
 from view.view import View
 from direct.task import Task
+from model.logging import Logger
 import math
 
 
@@ -91,6 +92,8 @@ class Scene3DView(View):
         except AssertionError:
             new_mouse_x = self.mouse_x
             new_mouse_y = self.mouse_y
+            Logger.log_warning()
+
 
         h, p, r = self.camera.getHpr()  # Euler angles
         delta_x = (new_mouse_x - self.mouse_x)/2
@@ -135,8 +138,13 @@ class Scene3DView(View):
             self.task_manager.remove(self.task)
 
         print(self.camera.getH())
+
         mpos = self.core.mouseWatcherNode.getMouse()
-        self.pickerRay.setFromLens(self.core.camNode, mpos.getX(), mpos.getY())
+        try:
+            self.pickerRay.setFromLens(self.core.camNode, mpos.getX(), mpos.getY())
+        except:
+            self.pickerRay.setFromLens(self.core.comNode, self.mouse_x, self.mouse_y)
+
         self.collision_traverser.traverse(self.render)
         # Assume for simplicity's sake that myHandler is a CollisionHandlerQueue.
         if self.collision_handler.getNumEntries() > 0:

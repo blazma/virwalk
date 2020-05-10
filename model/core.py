@@ -1,4 +1,5 @@
 from model.location import Location
+from model.logging import Logger
 from view.main_menu_view import MainMenuView
 from view.scene_3d_view import Scene3DView
 from view.pause_menu_view import PauseMenuView
@@ -10,7 +11,19 @@ from pathlib import Path
 import numpy as np
 import math
 import csv
+import time
 
+
+def timeit(method):
+    def timed(*args, **kw):
+        ts = time.time()
+        result = method(*args, **kw)
+        te = time.time()
+
+        print(method.__name__, args, kw, te - ts, "halál")
+        return result
+
+    return timed
 
 class Core(ShowBase, DirectObject):
     WINDOW_WIDTH = 800
@@ -57,8 +70,10 @@ class Core(ShowBase, DirectObject):
         props.setSize(self.WINDOW_WIDTH, self.WINDOW_HEIGHT)
         self.win.requestProperties(props)
 
+    @Logger.runtime
     def load_data(self):
 
+        @Logger.runtime
         def process_coords():
             split_coords = row["map_coord"].split(',')
             map_x, map_y = [int(i) for i in split_coords]
@@ -66,6 +81,7 @@ class Core(ShowBase, DirectObject):
             map_y_normed = -(((map_y*2) / 549) - 1)
             return map_x_normed, map_y_normed
 
+        @Logger.runtime
         def process_texture():
             texture_path = Path("resource/textures/{}".format(row["texture"]))
             texture = self.loader.loadTexture(texture_path)
@@ -92,6 +108,7 @@ class Core(ShowBase, DirectObject):
         else:
             return np.array([target_x - origin_x, target_y - origin_y])
 
+    @Logger.runtime
     def set_reference_point(self):
         theta = 2*math.pi-math.radians(self.REFERENCE_ANGLE)
         origin_pos = self.locations[0].get_position()
@@ -104,6 +121,7 @@ class Core(ShowBase, DirectObject):
         reference_point_matrix = np.array([offset_x, offset_y])+np.transpose((1/v_norm)*rotation_matrix*v)
         self.reference_point = reference_point_matrix.tolist()[0]
 
+    @Logger.runtime
     def set_neighbor_markers(self):
         marker_texture_path = self.PATHS["MINIMAP_BG_TEXTURE"]
         marker_texture = self.loader.loadTexture(marker_texture_path)
@@ -132,12 +150,14 @@ class Core(ShowBase, DirectObject):
 
                 location.add_neighbor_marker(neighbor, angle, marker_texture)
 
+    @Logger.runtime
     def find_location_by_id(self, id):
         for location in self.locations:
             if location.id == id:
                 return location
         return None
 
+    @Logger.runtime
     def find_location_by_marker(self, marker):
         for location in self.locations:
             for neighbor_id in location.get_markers():
