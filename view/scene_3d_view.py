@@ -156,12 +156,6 @@ class Scene3DView(View):
             self.pickerRay.setFromLens(self.core.camNode, mpos.getX(), mpos.getY())
         except:
             self.pickerRay.setFromLens(self.core.camNode, self.mouse_x, self.mouse_y)
-
-        try:
-            mpos = self.core.mouseWatcherNode.getMouse()
-            self.pickerRay.setFromLens(self.core.camNode, mpos.getX(), mpos.getY())
-        except:
-            self.pickerRay.setFromLens(self.core.camNode, self.mouse_x, self.mouse_y)
             Logger.log_warning("Mouse out from the window.")
 
         self.collision_traverser.traverse(self.render)
