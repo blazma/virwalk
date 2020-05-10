@@ -6,6 +6,7 @@ from panda3d.core import GeomNode
 from view.view import View
 from direct.task import Task
 import math
+from view.options_menu import OptionsMenu
 
 
 class Scene3DView(View):
@@ -45,6 +46,8 @@ class Scene3DView(View):
         self.target_location = None
         self.is_clicked_on_target = False
         self.is_pause_on = False
+        self.is_options_on = False
+        self.options_menu = OptionsMenu(self.core)
 
     def set_up_controls(self):
         if not self.is_pause_on:
@@ -66,9 +69,11 @@ class Scene3DView(View):
         self.load_neighbor_markers()
         self.minimap.show()
         self.set_up_controls()
-
+        self.options_menu.load_view()
+        
     def close_view(self):
         pass
+        self.options_menu.close_view()
 
     def load_neighbor_markers(self):
         for neighbor_id in self.location.get_neighbors():
@@ -102,8 +107,8 @@ class Scene3DView(View):
         h, p, r = self.camera.getHpr()  # Euler angles
         delta_x = (new_mouse_x - self.mouse_x)/2
         delta_y = (new_mouse_y - self.mouse_y)/2
-        angle_x = self.horizontal_fov*math.asin(delta_x)
-        angle_y = self.vertical_fov*math.asin(delta_y)
+        angle_x = self.core.rotation_sensitivity*self.horizontal_fov*math.asin(delta_x)
+        angle_y = self.core.rotation_sensitivity*self.vertical_fov*math.asin(delta_y)
         min_p = self.vertical_fov/2-math.degrees(math.atan(1/2))
         max_p = -min_p
 
@@ -170,7 +175,7 @@ class Scene3DView(View):
         # endpoint in this sense means the upper/lowermost point still in the frame, on the surface of the cylinder
         if origin_endpoint_distance <= 1/2:  # due to the cylinder being 1 unit tall from lowermost point to uppermost
             self.core.camLens.setFov(hfov=self.fov_coefficient * new_vertical_fov, vfov=new_vertical_fov)
-            self.zoom_level += 0.01
+            self.zoom_level += self.core.zoom_sensitivity
 
     def on_wheel_down(self):
         # ZOOM IN
@@ -178,7 +183,7 @@ class Scene3DView(View):
         new_vertical_fov = self.vertical_fov + self.delta_fov
         if self.min_fov <= new_vertical_fov:
             self.core.camLens.setFov(hfov=self.fov_coefficient * new_vertical_fov, vfov=new_vertical_fov)
-            self.zoom_level -= 0.01
+            self.zoom_level -= self.core.zoom_sensitivity
 
     def on_esc_button(self):
         if not self.is_pause_on:
@@ -193,6 +198,12 @@ class Scene3DView(View):
             self.core.set_active_view(self.core.scene_3d_view)
             self.set_up_controls()
 
+    def ignore_mouse(self):
+        self.core.ignore('mouse1')
+        self.core.ignore('mouse1-up')
+        self.core.ignore('wheel_up')
+        self.core.ignore('wheel_down')
+
     def change_location(self, new_location):
         active_location = self.core.get_active_location()
         markers = active_location.get_markers()
@@ -204,3 +215,4 @@ class Scene3DView(View):
         self.load_neighbor_markers()
         loc_x, loc_y = self.location.get_position()
         self.indicator.setPos(loc_x, 0, loc_y)
+
