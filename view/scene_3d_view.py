@@ -15,6 +15,9 @@ class Scene3DView(View):
         self.loader = self.core.loader
         self.render = self.core.render
         self.minimap = self.core.minimap
+        self.camera = self.core.camera
+        self.location = self.core.active_location
+        self.indicator = self.core.indicator
 
         self.task = None
         self.mouse_x, self.mouse_y = 0, 0
@@ -39,9 +42,8 @@ class Scene3DView(View):
         self.collision_traverser.addCollider(self.pickerNP, self.collision_handler)
 
         self.task_manager = Task.TaskManager()
-        self.camera = self.core.camera
-        self.location = self.core.active_location
-        self.indicator = self.core.indicator
+        self.target_location = None
+        self.is_clicked_on_target = False
         self.is_pause_on = False
 
     def set_up_controls(self):
@@ -135,11 +137,6 @@ class Scene3DView(View):
         self.task = self.task_manager.add(on_mouse_task)
         self.update_mouse_position()
 
-    def on_mouse_release(self):
-        self.update_camera_position()
-        if self.task is not None:
-            self.task_manager.remove(self.task)
-
         try:
             mpos = self.core.mouseWatcherNode.getMouse()
             self.pickerRay.setFromLens(self.core.camNode, mpos.getX(), mpos.getY())
@@ -147,15 +144,22 @@ class Scene3DView(View):
             self.pickerRay.setFromLens(self.core.camNode, self.mouse_x, self.mouse_y)
 
         self.collision_traverser.traverse(self.render)
-        # Assume for simplicity's sake that myHandler is a CollisionHandlerQueue.
         if self.collision_handler.getNumEntries() > 0:
-            # This is so we get the closest object.
             self.collision_handler.sortEntries()
             pickedObj = self.collision_handler.getEntry(0).getIntoNodePath()
             pickedObj = pickedObj.findNetPythonTag('marker_tag')
             if not pickedObj.isEmpty():
-                picked_location = self.core.find_location_by_marker(pickedObj)
-                self.change_location(picked_location)
+                self.target_location = self.core.find_location_by_marker(pickedObj)
+                self.is_clicked_on_target = True
+
+    def on_mouse_release(self):
+        self.update_camera_position()
+        if self.task is not None:
+            self.task_manager.remove(self.task)
+
+        if self.is_clicked_on_target:
+            self.change_location(self.target_location)
+            self.is_clicked_on_target = False
 
     def on_wheel_up(self):
         # ZOOM OUT
