@@ -149,7 +149,7 @@ class Scene3DView(View):
             pickedObj = self.collision_handler.getEntry(0).getIntoNodePath()
             pickedObj = pickedObj.findNetPythonTag('marker_tag')
             if not pickedObj.isEmpty():
-                self.target_location = self.core.find_location_by_marker(pickedObj)
+                self.target_location = next(self.core.find_location_by_marker(pickedObj))
                 self.is_clicked_on_target = True
 
     def on_mouse_release(self):
