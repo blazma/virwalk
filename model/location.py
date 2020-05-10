@@ -24,7 +24,6 @@ class Location(Actor):
     def add_neighbor_marker(self, neighbor, marker_angle, marker_texture):
         marker_model = Actor(self.PATHS["LOCATION_MARKER_MODEL"])
         marker_model.setPythonTag('marker_tag', self.id*10+neighbor.id)
-        print(marker_model.getTags())
         marker_model.setTexture(marker_texture)
         marker_model.setScale(1.0, 1.0, 1.0)
         if isinstance(neighbor, Location):

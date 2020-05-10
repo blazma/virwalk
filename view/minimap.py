@@ -14,7 +14,7 @@ class Minimap:
         self.core = core
         self.locations = self.core.locations
         scaling_vector = (self.MINIMAP_SCALE/self.core.ASPECT_RATIO, 0, self.MINIMAP_SCALE)
-        self.screen = DirectFrame(frameColor=(0, 0, 0, 0), pos=self.MINIMAP_POSITION,
+        self.screen = DirectFrame(frameColor=(0, 0, 0, 1), pos=self.MINIMAP_POSITION,
                                   scale=scaling_vector, parent=self.core.render2d)
         self.map = None
         self.indicator = self.core.indicator
@@ -28,6 +28,7 @@ class Minimap:
         background_model_path = self.core.PATHS["MINIMAP_BG_MODEL"]
         background_texture_path = self.core.PATHS["MINIMAP_BG_TEXTURE"]
         self.map = Actor(background_model_path)
+        self.map.setTransparency(TransparencyAttrib.MAlpha)
         texture = self.core.loader.loadTexture(background_texture_path)
         self.map.setColor(1, 1, 1, 1)
         self.map.setTexture(texture)
