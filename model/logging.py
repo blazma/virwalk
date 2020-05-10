@@ -7,14 +7,16 @@ import logging
 class Logger():
     RUNTIME_LOG_PATH = Path("logs/runtime.txt")
     LOGGING_MESSAGES_PATH = Path("logs/logging_messages.log")
+    DEBUGGER = None
 
 
     @classmethod
     def write_logfile(cls, message):
-        with open(cls.RUNTIME_LOG_PATH, "a") as log_file:
-            current_time = time.strftime("%H:%M:%S ")
-            message = current_time + message
-            log_file.write(message)
+        if cls.DEBUGGER == 1:
+            with open(cls.RUNTIME_LOG_PATH, "a") as log_file:
+                current_time = time.strftime("%H:%M:%S ")
+                message = current_time + message
+                log_file.write(message)
 
     @classmethod
     def clear_logs(cls):
@@ -27,7 +29,6 @@ class Logger():
 
         with open(Logger.RUNTIME_LOG_PATH, 'w') as log_file:
             current_time = time.strftime("%H:%M:%S")
-            print(current_time)
             runtime_log_header = "VirWalk runtime file - {} {} {}".format(date.today(), current_time,
                                                                   "\nProgram started\n\n")
             log_file.write(runtime_log_header)
