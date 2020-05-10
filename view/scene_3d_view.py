@@ -154,8 +154,6 @@ class Scene3DView(View):
         except:
             self.pickerRay.setFromLens(self.core.camNode, self.mouse_x, self.mouse_y)
 
-        print(self.camera.getH())
-
         try:
             mpos = self.core.mouseWatcherNode.getMouse()
             self.pickerRay.setFromLens(self.core.camNode, mpos.getX(), mpos.getY())
