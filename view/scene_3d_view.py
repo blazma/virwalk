@@ -154,7 +154,7 @@ class Scene3DView(View):
             pickedObj = self.collision_handler.getEntry(0).getIntoNodePath()
             pickedObj = pickedObj.findNetPythonTag('marker_tag')
             if not pickedObj.isEmpty():
-                picked_location = self.core.find_location_by_marker(pickedObj)
+                picked_location = next(self.core.find_location_by_marker(pickedObj))
                 self.change_location(picked_location)
 
     def on_wheel_up(self):
