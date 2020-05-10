@@ -1,0 +1,63 @@
+<CoordinateSystem> { Z-up } 
+<Material> Material {
+  <Scalar> diffr { 0 }
+  <Scalar> diffg { 0 }
+  <Scalar> diffb { 0 }
+  <Scalar> ambr { 0 }
+  <Scalar> ambg { 0 }
+  <Scalar> ambb { 0 }
+  <Scalar> emitr { 0.800000 }
+  <Scalar> emitg { 0.800000 }
+  <Scalar> emitb { 0.800000 }
+}
+
+<Texture> Texture {
+  "./../virwalk/resource/minimap.png"
+  <Scalar> envtype { MODULATE }
+  <Scalar> minfilter { LINEAR_MIPMAP_LINEAR }
+  <Scalar> magfilter { LINEAR_MIPMAP_LINEAR }
+  <Scalar> wrap { REPEAT }
+}
+
+  <Group> Cube {
+    <Transform> {
+      <Matrix4> {
+        -1.0 3.2584136988589307e-07 2.379422444395273e-14 0.0 
+        -3.2584136988589307e-07 -1.0 1.0344488335923261e-15 0.0 
+        2.379422444395273e-14 1.0344411044166824e-15 1.0 0.0 
+        0.0 0.0 0.0 1.0 
+      }
+    }
+    
+    <VertexPool> Cube {
+    
+      <Vertex> 0 {-1.000000 0.000000 -1.000000
+        <UV>  {
+          0.000000 0.000000 
+        }
+      }
+      <Vertex> 1 {-0.999999 0.000001 1.000000
+        <UV>  {
+          0.000000 1.000000 
+        }
+      }
+      <Vertex> 2 {1.000000 -0.000001 1.000000
+        <UV>  {
+          1.000000 1.000000 
+        }
+      }
+      <Vertex> 3 {1.000000 -0.000001 -1.000000
+        <UV>  {
+          1.000000 0.000000 
+        }
+      }}
+    
+    
+    <Polygon> {
+      <TRef> { Texture }
+      <MRef> { Material }
+      <Normal> {0.000001 1.000000 -0.000000}
+      <RGBA> {0.800000 0.800000 0.800000 1}
+      <VertexRef> { 0 1 2 3 <Ref> { Cube }} 
+    }
+  }

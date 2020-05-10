@@ -1,6 +1,5 @@
 id|texture|map_coord|neighbors
-1|photo00.jpg|314,493|2
-2|photo01.jpg|260,452|1,3
-3|photo02.jpg|213,291|2,4,5
-4|photo03.jpg|228,165|3,5
-5|photo00.jpg|200,100|4
+0|texture00.png|202,477|1
+1|texture01.png|165,440|0,2
+2|texture02.png|116,286|1,3
+3|texture03.png|156,145|2

@@ -1,3 +1,8 @@
+from panda3d.core import CollisionTraverser
+from panda3d.core import CollisionHandlerQueue
+from panda3d.core import CollisionNode
+from panda3d.core import CollisionRay
+from panda3d.core import GeomNode
 from view.view import View
 from direct.task import Task
 import math
@@ -23,6 +28,16 @@ class Scene3DView(View):
         self.max_fov = self.fov(1/2)
         self.fov_coefficient = self.horizontal_fov/self.vertical_fov
 
+        # collision detector TODO: find a new location for
+        self.collision_traverser = CollisionTraverser()
+        self.collision_handler = CollisionHandlerQueue()
+        self.pickerNode = CollisionNode('mouseRay')
+        self.pickerNP = self.core.camera.attachNewNode(self.pickerNode)
+        self.pickerNode.setFromCollideMask(GeomNode.getDefaultCollideMask())
+        self.pickerRay = CollisionRay()
+        self.pickerNode.addSolid(self.pickerRay)
+        self.collision_traverser.addCollider(self.pickerNP, self.collision_handler)
+
         self.task_manager = Task.TaskManager()
         self.camera = self.core.camera
         self.location = self.core.active_location
@@ -35,7 +50,6 @@ class Scene3DView(View):
             self.core.accept('mouse1-up', self.on_mouse_release)
             self.core.accept('wheel_up', self.on_wheel_up)
             self.core.accept('wheel_down', self.on_wheel_down)
-            self.core.accept('space', self.change_location)
         self.core.accept('escape', self.on_esc_button)
 
     def load_view(self):
@@ -46,11 +60,20 @@ class Scene3DView(View):
         self.scene.setScale(2.0, 2.0, 2.0)
         self.scene.setPos(self.camera.getPos())
         self.core.active_location.set_to_active()
+        self.load_neighbor_markers()
         self.minimap.show()
         self.set_up_controls()
 
     def close_view(self):
         pass
+
+    def load_neighbor_markers(self):
+        for neighbor_id in self.location.get_neighbors():
+            marker_center_node = self.scene.attachNewNode("{}_marker_center_node".format(neighbor_id))
+            angle, marker_model = self.location.neighbor_markers[neighbor_id]
+            marker_model.reparentTo(marker_center_node)
+            marker_center_node.setH(angle)
+            marker_model.show()
 
     def update_mouse_position(self):
         self.mouse_x = self.core.mouseWatcherNode.getMouseX()
@@ -111,6 +134,20 @@ class Scene3DView(View):
         if self.task is not None:
             self.task_manager.remove(self.task)
 
+        print(self.camera.getH())
+        mpos = self.core.mouseWatcherNode.getMouse()
+        self.pickerRay.setFromLens(self.core.camNode, mpos.getX(), mpos.getY())
+        self.collision_traverser.traverse(self.render)
+        # Assume for simplicity's sake that myHandler is a CollisionHandlerQueue.
+        if self.collision_handler.getNumEntries() > 0:
+            # This is so we get the closest object.
+            self.collision_handler.sortEntries()
+            pickedObj = self.collision_handler.getEntry(0).getIntoNodePath()
+            pickedObj = pickedObj.findNetPythonTag('marker_tag')
+            if not pickedObj.isEmpty():
+                picked_location = self.core.find_location_by_marker(pickedObj)
+                self.change_location(picked_location)
+
     def on_wheel_up(self):
         # ZOOM OUT
         _, p, _ = self.camera.getHpr()
@@ -143,7 +180,14 @@ class Scene3DView(View):
             self.core.set_active_view(self.core.scene_3d_view)
             self.set_up_controls()
 
-    def change_location(self):
-        neighbor_id = self.core.get_active_location().neighbors[0]
-        neighbor = self.core.find_location_by_id(neighbor_id)
-        self.core.set_active_location(neighbor)
+    def change_location(self, new_location):
+        active_location = self.core.get_active_location()
+        markers = active_location.get_markers()
+        for neighbor_id in markers:
+            angle, model = markers[neighbor_id]
+            model.hide()
+        #neighbor_id = active_location.neighbors[0]  # TODO: this will change to whatever the user clicked on
+        #neighbor = self.core.find_location_by_id(neighbor_id)
+        self.core.set_active_location(new_location)
+        self.location = self.core.active_location
+        self.load_neighbor_markers()
