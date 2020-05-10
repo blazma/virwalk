@@ -18,11 +18,14 @@ class OptionsMenu(View):
         self.opened_window['state'] = DGG.NORMAL
         self.opened_window.setTransparency(TransparencyAttrib.MAlpha)
 
-        self.minimap_chbx = DirectCheckButton(text='Hide minimap', pos=(-1.07, 0, 0.78), scale=0.06, command=self.check_on, parent=self.opened_window)
+        self.minimap_chbx = DirectCheckButton(text='Hide minimap', pos=(-1.05, 0, 0.78), scale=0.07, command=self.check_on, parent=self.opened_window, relief=None)
         self.rot_sens_slider = DirectSlider(pos=(-0.4, 0, 0.95), scale=0.2, range=(0.2, 5), value=1, pageSize=3, command=self.core.set_rot_sens, parent=self.opened_window)
         self.zoom_sens_slider = DirectSlider(pos=(-0.4, 0, 0.87), scale=0.2, range=(0.25, 4), value=1, pageSize=3, command=self.core.set_zoom_sens, parent=self.opened_window)
-        self.rot_sens_lbl = DirectLabel(text='Rotation sensitivity', scale=0.07, pos=(-1.03, 0, 0.94), parent=self.opened_window)
-        self.zoom_sens_lbl = DirectLabel(text='Zoom sensitivity', scale=0.072, pos=(-1.06, 0, 0.86), parent=self.opened_window)
+        self.rot_sens_lbl = DirectLabel(text='Rotation sensitivity', scale=0.07, pos=(-1.03, 0, 0.94), parent=self.opened_window, relief=None)
+        self.zoom_sens_lbl = DirectLabel(text='Zoom sensitivity', scale=0.072, pos=(-1.06, 0, 0.86), parent=self.opened_window, relief=None)
+        self.rot_sens_lbl["text_fg"] = (1,1,1,1)
+        self.zoom_sens_lbl["text_fg"] = (1, 1, 1, 1)
+        self.minimap_chbx["text_fg"] = (1, 1, 1, 1)
         self.opened_window.hide()
         self.active_options = self.closed_window
 
