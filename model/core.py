@@ -12,19 +12,7 @@ from pathlib import Path
 import numpy as np
 import math
 import csv
-import time
 
-
-def timeit(method):
-    def timed(*args, **kw):
-        ts = time.time()
-        result = method(*args, **kw)
-        te = time.time()
-
-        print(method.__name__, args, kw, te - ts, "halál")
-        return result
-
-    return timed
 
 class Core(ShowBase, DirectObject):
     WINDOW_WIDTH = 800
