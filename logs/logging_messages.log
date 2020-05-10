@@ -1,0 +1,18 @@
+2020-05-10 20:53:00,719: INFO: VirWalk logfile
+Program started
+
+
+2020-05-10 20:53:00,719: INFO: logging_messages.logs has been cleared
+2020-05-10 20:53:00,720: INFO: logs.txt has been cleared
+2020-05-10 20:53:04,001: INFO: The locations_db has been loaded
+2020-05-10 20:53:04,122: INFO: Active view has been set to main_menu_view
+2020-05-10 20:53:06,735: INFO: Active view has been set to scene_3d_view
+2020-05-10 20:53:07,752: INFO: Active view has been set to pause_menu_view
+2020-05-10 20:53:08,518: INFO: Active view has been set to scene_3d_view
+2020-05-10 20:53:09,900: INFO: Active view has been set to pause_menu_view
+2020-05-10 20:53:10,983: INFO: Active view has been set to main_menu_view
+2020-05-10 20:53:11,550: INFO: Active view has been set to scene_3d_view
+2020-05-10 20:53:18,832: INFO: Active location has been set from 0 to 1
+2020-05-10 20:53:24,913: INFO: Active location has been set from 1 to 2
+2020-05-10 20:53:26,861: INFO: Active location has been set from 2 to 3
+2020-05-10 20:53:28,078: INFO: Active location has been set from 3 to 3
