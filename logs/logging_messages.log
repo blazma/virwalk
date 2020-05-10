@@ -1,0 +1,8 @@
+2020-05-11 00:48:49,772: INFO: VirWalk logfile
+Program started
+
+
+2020-05-11 00:48:49,772: INFO: logging_messages.logs has been cleared
+2020-05-11 00:48:49,773: INFO: logs.txt has been cleared
+2020-05-11 00:48:55,513: INFO: The locations_db has been loaded
+2020-05-11 00:48:55,632: INFO: Active view has been set to main_menu_view
