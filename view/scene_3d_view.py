@@ -2,6 +2,7 @@ from view.view import View
 from direct.task import Task
 from pathlib import Path
 import math
+from view.options_menu import OptionsMenu
 
 
 class Scene3DView(View):
@@ -48,9 +49,12 @@ class Scene3DView(View):
         self.scene.reparentTo(self.render)
         self.scene.setScale(2.0, 2.0, 2.0)
         self.scene.setPos(self.camera.getPos())
+        self.options_menu = OptionsMenu(self.core)
+        self.options_menu.load_view()
 
     def close_view(self):
         pass
+        self.options_menu.close_view()
 
     def update_mouse_position(self):
         self.mouse_x = self.core.mouseWatcherNode.getMouseX()

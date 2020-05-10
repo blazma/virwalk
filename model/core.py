@@ -51,5 +51,7 @@ class Core(ShowBase, DirectObject):
         return self.active_view
 
     def set_active_view(self, view):
+        if self.active_view!= None:
+            self.active_view.close_view()
         view.load_view()
         self.active_view = view
