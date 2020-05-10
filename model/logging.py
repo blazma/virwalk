@@ -46,4 +46,10 @@ class Logger():
 
     @staticmethod
     def log_warning():
-        logging.basicConfig(filename = "logging_messages.txt", level = logging.WARNING, format = '%(asctime)s: %(levelname)s')
+        logging.basicConfig(filename="logging_messages.log", level=logging.WARNING, format='%(asctime)s: %(levelname)s')
+        logging.warning('Mouse out from the window mouse_x={}, mouse_y={}'.format(5, 4))
+
+    @staticmethod
+    def log_file_not_found(path):
+        logging.basicConfig(filename="logging_messages.log", level=logging.ERROR, format='%(asctime)s: %(levelname)s')
+        logging.error('{} file not found!'.format(path))

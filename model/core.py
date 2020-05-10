@@ -32,7 +32,7 @@ class Core(ShowBase, DirectObject):
     REFERENCE_ANGLE = 188
     PATHS = {
         "3D_SCENE_MODEL": "resource/models/cylinder.egg",
-        "LOCATIONS_DB": "resource/location_file.txt",
+        "LOCATIONS_DB": "resource/locatin_file.txt",
         "MINIMAP_BG_TEXTURE": "resource/textures/minimap.png",
         "MINIMAP_BG_MODEL": "resource/models/minimap.egg",
         "MINIMAP_POINT_MODEL": "resource/models/point.egg",
@@ -88,16 +88,20 @@ class Core(ShowBase, DirectObject):
             return texture
 
         self.scene_3d_model = self.loader.loadModel(self.PATHS["3D_SCENE_MODEL"])
-        with open(self.PATHS["LOCATIONS_DB"], "r") as l_file:
-            data = csv.DictReader(l_file, delimiter="|")
-            for row in data:
-                id = int(row["id"])
-                x, y = process_coords()
-                neighbors = [int(neighbor_id) for neighbor_id in row["neighbors"].split(',')]
-                texture = process_texture()
-                location = Location(id, x, y, neighbors, texture)
-                location.reparentTo(self.render2d)
-                self.locations.append(location)
+
+        try:
+            with open(self.PATHS["LOCATIONS_DB"], "r") as l_file:
+                data = csv.DictReader(l_file, delimiter="|")
+                for row in data:
+                    id = int(row["id"])
+                    x, y = process_coords()
+                    neighbors = [int(neighbor_id) for neighbor_id in row["neighbors"].split(',')]
+                    texture = process_texture()
+                    location = Location(id, x, y, neighbors, texture)
+                    location.reparentTo(self.render2d)
+                    self.locations.append(location)
+        except:
+            Logger.log_file_not_found(self.PATHS["LOCATIONS_DB"])
 
     @staticmethod
     def calculate_displacement(origin_pos, target_pos, transpose=False):

@@ -1,25 +1,3 @@
-VirWalk logfile - 2020-05-10 17:58:45 
+VirWalk logfile - 2020-05-10 18:34:29 
 
-17:58:45 process_coords () {} 9.5367431640625e-06 
-17:58:46 process_texture () {} 1.1773676872253418 
-17:58:46 process_coords () {} 9.059906005859375e-06 
-17:58:48 process_texture () {} 1.414250373840332 
-17:58:48 process_coords () {} 9.775161743164062e-06 
-17:58:49 process_texture () {} 1.436307668685913 
-17:58:49 process_coords () {} 1.0728836059570312e-05 
-17:58:50 process_texture () {} 1.3531720638275146 
-17:58:50 load_data (<model.core.Core object at 0x7fe7e12a9a58>,) {} 5.390752553939819 
-17:58:50 set_reference_point (<model.core.Core object at 0x7fe7e12a9a58>,) {} 0.00021076202392578125 
-17:58:50 find_location_by_id (<model.core.Core object at 0x7fe7e12a9a58>, 1) {} 3.814697265625e-06 
-17:58:50 find_location_by_id (<model.core.Core object at 0x7fe7e12a9a58>, 0) {} 1.9073486328125e-06 
-17:58:50 find_location_by_id (<model.core.Core object at 0x7fe7e12a9a58>, 2) {} 1.9073486328125e-06 
-17:58:50 find_location_by_id (<model.core.Core object at 0x7fe7e12a9a58>, 1) {} 2.1457672119140625e-06 
-17:58:50 find_location_by_id (<model.core.Core object at 0x7fe7e12a9a58>, 3) {} 2.86102294921875e-06 
-17:58:50 find_location_by_id (<model.core.Core object at 0x7fe7e12a9a58>, 2) {} 2.1457672119140625e-06 
-17:58:50 set_neighbor_markers (<model.core.Core object at 0x7fe7e12a9a58>,) {} 0.05195307731628418 
-17:58:51 find_location_by_id (<model.core.Core object at 0x7fe7e12a9a58>, 1) {} 4.291534423828125e-06 
-17:58:51 find_location_by_id (<model.core.Core object at 0x7fe7e12a9a58>, 0) {} 1.9073486328125e-06 
-17:58:51 find_location_by_id (<model.core.Core object at 0x7fe7e12a9a58>, 2) {} 1.9073486328125e-06 
-17:58:51 find_location_by_id (<model.core.Core object at 0x7fe7e12a9a58>, 1) {} 9.5367431640625e-07 
-17:58:51 find_location_by_id (<model.core.Core object at 0x7fe7e12a9a58>, 3) {} 1.430511474609375e-06 
-17:58:51 find_location_by_id (<model.core.Core object at 0x7fe7e12a9a58>, 2) {} 9.5367431640625e-07 
+18:34:29 load_data (<model.core.Core object at 0x7f7c5aaa3a58>,) {} 0.011680841445922852 
