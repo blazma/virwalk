@@ -32,7 +32,7 @@ class Core(ShowBase, DirectObject):
     REFERENCE_ANGLE = 188
     PATHS = {
         "3D_SCENE_MODEL": "resource/models/cylinder.egg",
-        "LOCATIONS_DB": "resource/locatin_file.txt",
+        "LOCATIONS_DB": "resource/location_file.txt",
         "MINIMAP_BG_TEXTURE": "resource/textures/minimap.png",
         "MINIMAP_BG_MODEL": "resource/models/minimap.egg",
         "MINIMAP_POINT_MODEL": "resource/models/point.egg",
@@ -100,8 +100,9 @@ class Core(ShowBase, DirectObject):
                     location = Location(id, x, y, neighbors, texture)
                     location.reparentTo(self.render2d)
                     self.locations.append(location)
+                Logger.log_info('The locations_db has been loaded')
         except:
-            Logger.log_file_not_found(self.PATHS["LOCATIONS_DB"])
+            Logger.error('{} file not found!'.format(self.PATHS["LOCATIONS_DB"]))
 
     @staticmethod
     def calculate_displacement(origin_pos, target_pos, transpose=False):
@@ -181,8 +182,9 @@ class Core(ShowBase, DirectObject):
     def set_active_view(self, view):
         view.load_view()
         self.active_view = view
+        Logger.log_info('Active view has been set to {}'.format(view))
 
-    def set_active_location(self, new_location):
+    def set_active_location(self, new_location): #ide
         old_location = self.active_location
         old_location_pos = old_location.get_position()
         new_location_pos = new_location.get_position()
@@ -195,3 +197,4 @@ class Core(ShowBase, DirectObject):
         texture = self.active_location.get_texture()
         self.scene_3d_model.setTexture(texture)
         self.reference_point += self.calculate_displacement(old_location_pos, new_location_pos)
+        Logger.log_info('Active location has been set from {} to {}'.format(old_location.id, new_location.id))

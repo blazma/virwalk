@@ -44,6 +44,9 @@ class Scene3DView(View):
         self.location = self.core.active_location
         self.is_pause_on = False
 
+    def __repr__(self):
+        return 'scene_3d_view'
+
     def set_up_controls(self):
         if not self.is_pause_on:
             self.core.disable_mouse()
@@ -92,7 +95,7 @@ class Scene3DView(View):
         except AssertionError:
             new_mouse_x = self.mouse_x
             new_mouse_y = self.mouse_y
-            Logger.log_warning()
+            Logger.log_warning("Mouse out from the window")
 
 
         h, p, r = self.camera.getHpr()  # Euler angles
@@ -144,7 +147,7 @@ class Scene3DView(View):
             self.pickerRay.setFromLens(self.core.camNode, mpos.getX(), mpos.getY())
         except:
             self.pickerRay.setFromLens(self.core.camNode, self.mouse_x, self.mouse_y)
-            Logger.log_warning()
+            Logger.log_warning("Mouse out from the window.")
 
         self.collision_traverser.traverse(self.render)
         # Assume for simplicity's sake that myHandler is a CollisionHandlerQueue.

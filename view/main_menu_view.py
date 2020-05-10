@@ -11,6 +11,9 @@ class MainMenuView(View):
         self.quit_button = DirectButton(text="Quit", command=self.on_quit_button, pos=(0, 0, -0.6), parent=self.screen, scale=0.1)
         self.screen.hide()
 
+    def __repr__(self):
+        return 'main_menu_view'
+
     def on_start_button(self):
         self.close_view()
         self.core.set_active_view(self.core.scene_3d_view)

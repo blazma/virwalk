@@ -1,3 +1,0 @@
-VirWalk logfile - 2020-05-10 18:34:29 
-
-18:34:29 load_data (<model.core.Core object at 0x7f7c5aaa3a58>,) {} 0.011680841445922852 
