@@ -1,9 +1,9 @@
 from model.core import Core
-from model.logging import Logger
+from model.logger import Logger
 import argparse
 
 
-class Virwalk():
+class Virwalk:
     def __init__(self, args):
         Logger.DEBUGGER = args.debug
         Logger.clear_logs()
@@ -21,6 +21,3 @@ if __name__ == '__main__':
 
     app = Virwalk(args)
     app.run()
-
-
-

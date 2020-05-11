@@ -1,26 +1,46 @@
-VirWalk runtime file - 2020-05-11 00:48:49 
+VirWalk runtime file - 2020-05-11 02:19:39 
 Program started
 
-00:48:50 process_coords () {} 1.239776611328125e-05 
-00:48:51 process_texture () {} 1.1481037139892578 
-00:48:51 process_coords () {} 1.0728836059570312e-05 
-00:48:52 process_texture () {} 1.4529638290405273 
-00:48:52 process_coords () {} 8.58306884765625e-06 
-00:48:54 process_texture () {} 1.4493768215179443 
-00:48:54 process_coords () {} 1.0251998901367188e-05 
-00:48:55 process_texture () {} 1.3646490573883057 
-00:48:55 load_data (<model.core.Core object at 0x7f6db4f13d68>,) {} 5.425714731216431 
-00:48:55 set_reference_point (<model.core.Core object at 0x7f6db4f13d68>,) {} 0.00033783912658691406 
-00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 1) {} 2.1457672119140625e-06 
-00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 0) {} 2.1457672119140625e-06 
-00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 2) {} 7.152557373046875e-07 
-00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 1) {} 7.152557373046875e-07 
-00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 3) {} 7.152557373046875e-07 
-00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 2) {} 7.152557373046875e-07 
-00:48:55 set_neighbor_markers (<model.core.Core object at 0x7f6db4f13d68>,) {} 0.09216523170471191 
-00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 1) {} 1.430511474609375e-06 
-00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 0) {} 7.152557373046875e-07 
-00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 2) {} 2.384185791015625e-07 
-00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 1) {} 4.76837158203125e-07 
-00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 3) {} 4.76837158203125e-07 
-00:48:55 find_location_by_id (<model.core.Core object at 0x7f6db4f13d68>, 2) {} 4.76837158203125e-07 
+02:19:40 process_coords () {} 0.0 
+02:19:40 process_texture () {} 0.5614986419677734 
+02:19:40 process_coords () {} 0.0 
+02:19:41 process_texture () {} 0.7504570484161377 
+02:19:41 process_coords () {} 0.0 
+02:19:42 process_texture () {} 0.7449436187744141 
+02:19:42 process_coords () {} 0.0 
+02:19:43 process_texture () {} 0.7211136817932129 
+02:19:43 load_data (<model.core.Core object at 0x09364870>,) {} 2.8069331645965576 
+02:19:43 set_reference_point (<model.core.Core object at 0x09364870>,) {} 0.0 
+02:19:43 find_location_by_id (<model.core.Core object at 0x09364870>, 1) {} 0.0 
+02:19:43 find_location_by_id (<model.core.Core object at 0x09364870>, 0) {} 0.0 
+02:19:43 find_location_by_id (<model.core.Core object at 0x09364870>, 2) {} 0.0 
+02:19:43 find_location_by_id (<model.core.Core object at 0x09364870>, 1) {} 0.0 
+02:19:43 find_location_by_id (<model.core.Core object at 0x09364870>, 3) {} 0.0009791851043701172 
+02:19:43 find_location_by_id (<model.core.Core object at 0x09364870>, 2) {} 0.0 
+02:19:43 set_neighbor_markers (<model.core.Core object at 0x09364870>,) {} 0.07879328727722168 
+02:19:43 find_location_by_id (<model.core.Core object at 0x09364870>, 1) {} 0.0 
+02:19:43 find_location_by_id (<model.core.Core object at 0x09364870>, 0) {} 0.0 
+02:19:43 find_location_by_id (<model.core.Core object at 0x09364870>, 2) {} 0.0 
+02:19:43 find_location_by_id (<model.core.Core object at 0x09364870>, 1) {} 0.0 
+02:19:43 find_location_by_id (<model.core.Core object at 0x09364870>, 3) {} 0.0 
+02:19:43 find_location_by_id (<model.core.Core object at 0x09364870>, 2) {} 0.0 
+02:20:01 find_location_by_marker (<model.core.Core object at 0x09364870>, render/cylinder.egg/1_marker_center_node/actor) {} 0.0 
+02:20:01 find_location_by_id (<model.core.Core object at 0x09364870>, 1) {} 0.0 
+02:20:01 find_location_by_marker (<model.core.Core object at 0x09364870>, render/cylinder.egg/1_marker_center_node/actor) {} 0.0 
+02:20:01 find_location_by_id (<model.core.Core object at 0x09364870>, 1) {} 0.0 
+02:20:04 find_location_by_marker (<model.core.Core object at 0x09364870>, render/cylinder.egg/2_marker_center_node/actor) {} 0.0 
+02:20:04 find_location_by_id (<model.core.Core object at 0x09364870>, 1) {} 0.0 
+02:20:04 find_location_by_id (<model.core.Core object at 0x09364870>, 0) {} 0.0 
+02:20:04 find_location_by_id (<model.core.Core object at 0x09364870>, 2) {} 0.0 
+02:20:07 find_location_by_marker (<model.core.Core object at 0x09364870>, render/cylinder.egg/3_marker_center_node/actor) {} 0.0 
+02:20:07 find_location_by_id (<model.core.Core object at 0x09364870>, 1) {} 0.0 
+02:20:07 find_location_by_id (<model.core.Core object at 0x09364870>, 0) {} 0.0 
+02:20:07 find_location_by_id (<model.core.Core object at 0x09364870>, 2) {} 0.0 
+02:20:07 find_location_by_id (<model.core.Core object at 0x09364870>, 1) {} 0.0 
+02:20:07 find_location_by_id (<model.core.Core object at 0x09364870>, 3) {} 0.0 
+02:20:08 find_location_by_marker (<model.core.Core object at 0x09364870>, render/cylinder.egg/3_marker_center_node/actor) {} 0.0 
+02:20:08 find_location_by_id (<model.core.Core object at 0x09364870>, 1) {} 0.0 
+02:20:08 find_location_by_id (<model.core.Core object at 0x09364870>, 0) {} 0.0 
+02:20:08 find_location_by_id (<model.core.Core object at 0x09364870>, 2) {} 0.0 
+02:20:08 find_location_by_id (<model.core.Core object at 0x09364870>, 1) {} 0.0 
+02:20:08 find_location_by_id (<model.core.Core object at 0x09364870>, 3) {} 0.0 
