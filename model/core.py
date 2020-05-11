@@ -1,5 +1,5 @@
 from model.location import Location
-from model.logging import Logger
+from model.logger import Logger
 from view.main_menu_view import MainMenuView
 from view.scene_3d_view import Scene3DView
 from view.pause_menu_view import PauseMenuView
@@ -19,15 +19,22 @@ class Core(ShowBase, DirectObject):
     WINDOW_HEIGHT = 600
     ASPECT_RATIO = WINDOW_WIDTH / WINDOW_HEIGHT
     REFERENCE_ANGLE = 188
+    MINIMAP_DIM = 549
     PATHS = {
         "3D_SCENE_MODEL": "resource/models/cylinder.egg",
         "LOCATIONS_DB": "resource/location_file.txt",
-        "MINIMAP_BG_TEXTURE": "resource/textures/minimap.png",
+        "MINIMAP_BG_TEXTURE": "resource/gui/minimap.png",
         "MINIMAP_BG_MODEL": "resource/models/minimap.egg",
         "MINIMAP_POINT_MODEL": "resource/models/point.egg",
         "LOCATION_MARKER_MODEL": "resource/models/arrow.egg",
-        "LOCATION_MARKER_TEXTURE": "resource/textures/arrow.png",
-        "INDICATOR_MODEL": "resource/models/indicator.egg"
+        "LOCATION_MARKER_TEXTURE": "resource/gui/arrow.png",
+        "INDICATOR_MODEL": "resource/models/indicator.egg",
+        "MAIN_MENU_BG": "resource/gui/main_menu_background.png",
+        "MAIN_MENU_START": "resource/gui/main_menu_start.png",
+        "MAIN_MENU_QUIT": "resource/gui/quit.png",
+        "PAUSE_MENU_BACK": "resource/gui/pause_menu_back_to_mm.png",
+        "PAUSE_MENU_CONTINUE": "resource/gui/pause_menu_continue.png",
+        "OPTIONS_BUTTON": "resource/gui/options.png"
     }
 
     def __init__(self):
@@ -74,8 +81,8 @@ class Core(ShowBase, DirectObject):
         def process_coords():
             split_coords = row["map_coord"].split(',')
             map_x, map_y = [int(i) for i in split_coords]
-            map_x_normed = ((map_x*2) / 549) - 1
-            map_y_normed = -(((map_y*2) / 549) - 1)
+            map_x_normed = ((map_x*2) / self.MINIMAP_DIM) - 1
+            map_y_normed = -(((map_y*2) / self.MINIMAP_DIM) - 1)
             return map_x_normed, map_y_normed
 
         @Logger.runtime
@@ -196,13 +203,11 @@ class Core(ShowBase, DirectObject):
         self.active_view = view
         Logger.log_info('Active view has been set to {}'.format(view))
 
-    def set_rot_sens(self):
-        self.rotation_sensitivity = self.rot_sens_unit * self.scene_3d_view.options_menu.rot_sens_slider['value']
-        print(self.scene_3d_view.options_menu.rot_sens_slider['value'], self.rotation_sensitivity)
+    def set_rotation_sensitivity(self):
+        self.rotation_sensitivity = self.rot_sens_unit * self.scene_3d_view.get_rotation_sensitivity()
 
-    def set_zoom_sens(self):
-        self.zoom_sensitivity = self.zoom_sens_unit * self.scene_3d_view.options_menu.zoom_sens_slider['value']
-        print(self.scene_3d_view.options_menu.zoom_sens_slider['value'], self.zoom_sensitivity)
+    def set_zoom_sensitivity(self):
+        self.zoom_sensitivity = self.zoom_sens_unit * self.scene_3d_view.get_zoom_sensitivity()
 
     def set_active_location(self, new_location):
         old_location = self.active_location

@@ -5,7 +5,8 @@ from panda3d.core import CollisionRay
 from panda3d.core import GeomNode
 from view.view import View
 from direct.task import Task
-from model.logging import Logger
+from model.logger import Logger
+from model.location import Location
 import math
 from view.options_menu import OptionsMenu
 
@@ -51,7 +52,7 @@ class Scene3DView(View):
         self.options_menu = OptionsMenu(self.core)
 
     def __repr__(self):
-        return 'scene_3d_view'
+        return 'Scene 3D View'
 
     def set_up_controls(self):
         if not self.is_pause_on:
@@ -162,7 +163,7 @@ class Scene3DView(View):
         if self.collision_handler.getNumEntries() > 0:
             self.collision_handler.sortEntries()
             pickedObj = self.collision_handler.getEntry(0).getIntoNodePath()
-            pickedObj = pickedObj.findNetPythonTag('marker_tag')
+            pickedObj = pickedObj.findNetPythonTag(Location.MARKER_TAG)
             if not pickedObj.isEmpty():
                 self.target_location = next(self.core.find_location_by_marker(pickedObj))
                 self.is_clicked_on_target = True
@@ -226,3 +227,8 @@ class Scene3DView(View):
         loc_x, loc_y = self.location.get_position()
         self.indicator.setPos(loc_x, 0, loc_y)
 
+    def get_rotation_sensitivity(self):
+        return self.options_menu.get_rotation_sensitivity()
+
+    def get_zoom_sensitivity(self):
+        return self.options_menu.get_zoom_sensitivity()

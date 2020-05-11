@@ -6,7 +6,7 @@ from panda3d.core import CardMaker
 
 
 class Minimap:
-    MINIMAP_POSITION = (0.7, 0.0, -0.7)
+    MINIMAP_POSITION = (0.775, 0.0, -0.7)
     MINIMAP_SCALE = 0.25
     LINE_THICKNESS = 2.25
 

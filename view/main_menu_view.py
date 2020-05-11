@@ -3,20 +3,34 @@ from direct.gui.DirectGui import *
 
 
 class MainMenuView(View):
-    BUTTON_RATIO = 431/(69*1.4)
+    SCALING_FACTOR = 1.4
+    BUTTON_ASPECT_RATIO = 431/69
+    BUTTON_SCALING_FACTOR = BUTTON_ASPECT_RATIO/SCALING_FACTOR
 
     def __init__(self, core):
         super().__init__(core)
-        self.screen = DirectFrame(frameColor=(1, 1, 1, 0), frameSize=(-1, 1, -1, 1), scale=(1.4, 1.0, 1.0),
-                                  image="resource/textures/main_menu_background.png", parent=self.core.aspect2d)
-        self.start_button = DirectButton(command=self.on_start_button, image="resource/textures/main_menu_start.png",
-                                         pos=(0, 0, -0.2), parent=self.screen, scale=(self.BUTTON_RATIO*0.1, 1.0, 0.1), relief=None)
-        self.quit_button = DirectButton(command=self.on_quit_button, pos=(0, 0, -0.6), parent=self.screen,
-                                        image="resource/textures/quit.png", scale=(self.BUTTON_RATIO*0.1, 1.0, 0.1), relief=None)
+        paths = self.core.PATHS
+        self.screen = DirectFrame(frameColor=(1, 1, 1, 0),
+                                  frameSize=(-1, 1, -1, 1),
+                                  scale=(self.SCALING_FACTOR, 1.0, 1.0),
+                                  image=paths["MAIN_MENU_BG"],
+                                  parent=self.core.aspect2d)
+        self.start_button = DirectButton(command=self.on_start_button,
+                                         image=paths["MAIN_MENU_START"],
+                                         pos=(0, 0, -0.2),
+                                         parent=self.screen,
+                                         scale=(self.BUTTON_SCALING_FACTOR*0.1, 1.0, 0.1),
+                                         relief=None)
+        self.quit_button = DirectButton(command=self.on_quit_button,
+                                        pos=(0, 0, -0.6),
+                                        parent=self.screen,
+                                        image=paths["MAIN_MENU_QUIT"],
+                                        scale=(self.BUTTON_SCALING_FACTOR*0.1, 1.0, 0.1),
+                                        relief=None)
         self.screen.hide()
 
     def __repr__(self):
-        return 'main_menu_view'
+        return 'Main Menu View'
 
     def on_start_button(self):
         self.close_view()

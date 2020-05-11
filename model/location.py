@@ -7,6 +7,7 @@ class Location(Actor):
         "MINIMAP_POINT_MODEL": "resource/models/point.egg"
     }
     SCALE = 0.065
+    MARKER_TAG = 'marker_tag'
 
     def __init__(self, id, x, y, neighbors, texture):
         super().__init__(self.PATHS["MINIMAP_POINT_MODEL"])
@@ -23,7 +24,7 @@ class Location(Actor):
 
     def add_neighbor_marker(self, neighbor, marker_angle, marker_texture):
         marker_model = Actor(self.PATHS["LOCATION_MARKER_MODEL"])
-        marker_model.setPythonTag('marker_tag', self.id*10+neighbor.id)
+        marker_model.setPythonTag(self.MARKER_TAG, self.id*10+neighbor.id)
         marker_model.setTexture(marker_texture)
         marker_model.setScale(1.0, 1.0, 1.0)
         if isinstance(neighbor, Location):

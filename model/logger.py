@@ -4,11 +4,10 @@ import time
 import logging
 
 
-class Logger():
+class Logger:
     RUNTIME_LOG_PATH = Path("logs/runtime.txt")
     LOGGING_MESSAGES_PATH = Path("logs/logging_messages.log")
     DEBUGGER = None
-
 
     @classmethod
     def write_logfile(cls, message):
@@ -45,7 +44,6 @@ class Logger():
 
             return result
         return wrapper
-
 
     @staticmethod
     def log_warning(message):
