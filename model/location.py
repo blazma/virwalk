@@ -2,6 +2,11 @@ from direct.actor.Actor import Actor
 
 
 class Location(Actor):
+    """
+    Location refers to a piece of campus our database has a photo of. Every location has a set of coordinates that
+    uniquely identifies it on the minimap and we use these data to calculate how they are related to each other
+    physically.
+    """
     PATHS = {
         "LOCATION_MARKER_MODEL": "resource/models/arrow.egg",
         "MINIMAP_POINT_MODEL": "resource/models/point.egg"

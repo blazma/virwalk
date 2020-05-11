@@ -12,6 +12,13 @@ from view.options_menu import OptionsMenu
 
 
 class Scene3DView(View):
+    """
+    This view defines the rotatable, explorable 3D world. The user can rotate the camera, zoom in and out, move around
+    the different locations, change different settings. The physical background for this is that the camera is placed
+    on the inside of an inside-out cylinder, where the middle has texture and the outside is invisible. Field of view
+    is limited in both directions in order to prevent strange artifacts as well as running out of the bounds of the
+    cylinder.
+    """
     def __init__(self, core):
         super().__init__(core)
         self.scene = self.core.scene_3d_model
@@ -55,6 +62,10 @@ class Scene3DView(View):
         return 'Scene 3D View'
 
     def set_up_controls(self):
+        """
+        Although Panda3D provides a set of built-in mouse controls, those are unsuitable for the kind of task we are
+        trying to achieve, so we had to define our own.
+        """
         if not self.is_pause_on:
             self.core.disable_mouse()
             self.core.accept('mouse1', self.on_mouse_press)
@@ -64,6 +75,9 @@ class Scene3DView(View):
         self.core.accept('escape', self.on_esc_button)
 
     def load_view(self):
+        """
+        Closes previously active view, makes this view the active view.
+        """
         self.core.get_active_view().close_view()
         texture = self.core.get_active_location().get_texture()
         self.scene.show()
@@ -113,7 +127,6 @@ class Scene3DView(View):
             new_mouse_y = self.mouse_y
             Logger.log_warning("Mouse out from the window")
 
-
         h, p, r = self.camera.getHpr()  # Euler angles
         delta_x = (new_mouse_x - self.mouse_x)/2
         delta_y = (new_mouse_y - self.mouse_y)/2
@@ -142,16 +155,7 @@ class Scene3DView(View):
         """
         return math.degrees(2*math.atan(x))
 
-    def on_mouse_press(self):
-
-        def on_mouse_task(task):
-            self.update_camera_position()
-            self.update_mouse_position()
-            return task.again
-
-        self.task = self.task_manager.add(on_mouse_task)
-        self.update_mouse_position()
-
+    def detect_location_marker(self):
         try:
             mpos = self.core.mouseWatcherNode.getMouse()
             self.pickerRay.setFromLens(self.core.camNode, mpos.getX(), mpos.getY())
@@ -167,6 +171,17 @@ class Scene3DView(View):
             if not pickedObj.isEmpty():
                 self.target_location = next(self.core.find_location_by_marker(pickedObj))
                 self.is_clicked_on_target = True
+
+    def on_mouse_press(self):
+
+        def on_mouse_task(task):
+            self.update_camera_position()
+            self.update_mouse_position()
+            return task.again
+
+        self.task = self.task_manager.add(on_mouse_task)
+        self.update_mouse_position()
+        self.detect_location_marker()
 
     def on_mouse_release(self):
         self.update_camera_position()
